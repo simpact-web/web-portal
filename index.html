@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIMPACT — Portail Professionnel</title>
+    <script src="users.js?v=2"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --ink: #0a0a0f;
+            --paper: #f5f3ee;
+            --blue: #1a4fff;
+            --blue-light: #4d78ff;
+            --amber: #f0a500;
+            --muted: #6b7280;
+            --border: #e2ddd5;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--paper);
+            min-height: 100vh;
+            display: flex;
+            overflow: hidden;
+        }
+
+        /* ── LEFT PANEL ── */
+        .left-panel {
+            width: 55%;
+            background: var(--ink);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 3rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .left-panel::before {
+            content: '';
+            position: absolute;
+            top: -200px; right: -200px;
+            width: 600px; height: 600px;
+            background: radial-gradient(circle, rgba(26,79,255,0.25) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .left-panel::after {
+            content: '';
+            position: absolute;
+            bottom: -100px; left: -100px;
+            width: 400px; height: 400px;
+            background: radial-gradient(circle, rgba(240,165,0,0.12) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 1;
+        }
+
+        .brand-logo {
+            width: 44px; height: 44px;
+            background: var(--blue);
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-family: 'Syne', sans-serif;
+            font-weight: 800; color: white; font-size: 1.1rem;
+        }
+
+        .brand-name {
+            font-family: 'Syne', sans-serif;
+            font-weight: 800; font-size: 1.5rem; color: white; letter-spacing: -0.5px;
+        }
+
+        .hero-text {
+            z-index: 1;
+        }
+
+        .hero-title {
+            font-family: 'Syne', sans-serif;
+            font-weight: 800;
+            font-size: clamp(2.5rem, 4vw, 3.8rem);
+            line-height: 1.05;
+            color: white;
+            margin-bottom: 1.5rem;
+        }
+
+        .hero-title span { color: var(--amber); }
+
+        .hero-desc {
+            font-size: 1rem;
+            color: rgba(255,255,255,0.55);
+            line-height: 1.7;
+            max-width: 380px;
+        }
+
+        .features {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            z-index: 1;
+        }
+
+        .feat {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: rgba(255,255,255,0.7);
+            font-size: 0.9rem;
+        }
+
+        .feat-dot {
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            background: var(--blue-light);
+            flex-shrink: 0;
+        }
+
+        /* ── RIGHT PANEL ── */
+        .right-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 3rem;
+            background: var(--paper);
+        }
+
+        .login-box { max-width: 380px; width: 100%; }
+
+        .login-label {
+            font-family: 'Syne', sans-serif;
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--blue);
+            margin-bottom: 1rem;
+        }
+
+        .login-title {
+            font-family: 'Syne', sans-serif;
+            font-weight: 800;
+            font-size: 2.2rem;
+            color: var(--ink);
+            margin-bottom: 2.5rem;
+            line-height: 1.1;
+        }
+
+        .field { margin-bottom: 1.2rem; }
+
+        .field label {
+            display: block;
+            font-size: 0.82rem;
+            font-weight: 500;
+            color: var(--muted);
+            margin-bottom: 0.5rem;
+        }
+
+        .field input {
+            width: 100%;
+            padding: 0.9rem 1rem;
+            background: white;
+            border: 1.5px solid var(--border);
+            border-radius: 8px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.95rem;
+            color: var(--ink);
+            transition: border-color 0.2s;
+            outline: none;
+        }
+
+        .field input:focus { border-color: var(--blue); }
+
+        .btn-login {
+            width: 100%;
+            padding: 0.95rem;
+            background: var(--blue);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-family: 'Syne', sans-serif;
+            font-weight: 700;
+            font-size: 0.95rem;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 0.5rem;
+        }
+
+        .btn-login:hover { background: var(--blue-light); transform: translateY(-1px); }
+        .btn-login:active { transform: translateY(0); }
+
+        .error-msg {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #dc2626;
+            padding: 0.8rem 1rem;
+            border-radius: 8px;
+            font-size: 0.87rem;
+            margin-top: 1rem;
+            display: none;
+        }
+
+        /* ── SUPERADMIN MENU ── */
+        .super-menu { display: none; }
+
+        .welcome-line {
+            font-size: 0.9rem;
+            color: var(--muted);
+            margin-bottom: 1.5rem;
+        }
+
+        .welcome-line strong { color: var(--ink); }
+
+        .module-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 1rem;
+        }
+
+        .mod-btn {
+            padding: 0.9rem 0.8rem;
+            border: 1.5px solid var(--border);
+            border-radius: 10px;
+            background: white;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.2s;
+            font-family: 'DM Sans', sans-serif;
+        }
+
+        .mod-btn:hover { border-color: var(--blue); background: #f0f5ff; transform: translateY(-2px); }
+
+        .mod-icon { font-size: 1.4rem; display: block; margin-bottom: 4px; }
+        .mod-name { font-weight: 500; font-size: 0.88rem; color: var(--ink); display: block; }
+
+        .btn-logout-sm {
+            width: 100%;
+            padding: 0.75rem;
+            background: transparent;
+            border: 1.5px solid #e5e7eb;
+            border-radius: 8px;
+            color: var(--muted);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.87rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-logout-sm:hover { border-color: #dc2626; color: #dc2626; }
+
+        @media (max-width: 768px) {
+            body { flex-direction: column; }
+            .left-panel { width: 100%; min-height: 200px; padding: 2rem; }
+            .hero-text, .features { display: none; }
+            .right-panel { padding: 2rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="left-panel">
+        <div class="brand">
+            <div class="brand-logo">SI</div>
+            <span class="brand-name">SIMPACT</span>
+        </div>
+
+        <div class="hero-text">
+            <h1 class="hero-title">
+                Votre atelier,<br>
+                <span>à portée</span><br>
+                de clic.
+            </h1>
+            <p class="hero-desc">
+                Portail professionnel pour la gestion complète de votre imprimerie numérique — production, commercial, comptabilité et suivi client en temps réel.
+            </p>
+        </div>
+
+        <div class="features">
+            <div class="feat"><span class="feat-dot"></span>Devis instantané avec calcul automatique</div>
+            <div class="feat"><span class="feat-dot"></span>Suivi de production en temps réel</div>
+            <div class="feat"><span class="feat-dot"></span>Espace client fidélisation intégré</div>
+            <div class="feat"><span class="feat-dot"></span>Synchronisation Google Sheets incluse</div>
+        </div>
+    </div>
+
+    <div class="right-panel">
+        <!-- LOGIN FORM -->
+        <div class="login-box" id="login-section">
+            <div class="login-label">Portail Professionnel</div>
+            <h2 class="login-title">Connexion</h2>
+
+            <form onsubmit="event.preventDefault(); attemptLogin();">
+                <div class="field">
+                    <label>Identifiant</label>
+                    <input type="text" id="login-id" placeholder="votre identifiant" autocomplete="username" required>
+                </div>
+                <div class="field">
+                    <label>Mot de passe</label>
+                    <input type="password" id="login-pass" placeholder="••••••••" autocomplete="current-password" required>
+                </div>
+                <button type="submit" class="btn-login">Se connecter →</button>
+            </form>
+            <div id="error-msg" class="error-msg">Identifiant ou mot de passe incorrect.</div>
+        </div>
+
+        <!-- SUPERADMIN MENU -->
+        <div class="login-box super-menu" id="super-section">
+            <div class="login-label">Centre de contrôle</div>
+            <h2 class="login-title">Bonjour,<br>Youssef 👋</h2>
+            <p class="welcome-line">Choisissez votre <strong>module de travail</strong></p>
+
+            <div class="module-grid">
+                <button class="mod-btn" onclick="go('commercial.html')">
+                    <span class="mod-icon">💼</span>
+                    <span class="mod-name">Commercial</span>
+                </button>
+                <button class="mod-btn" onclick="go('production.html')">
+                    <span class="mod-icon">🏭</span>
+                    <span class="mod-name">Atelier</span>
+                </button>
+                <button class="mod-btn" onclick="go('compta.html')">
+                    <span class="mod-icon">💰</span>
+                    <span class="mod-name">Comptabilité</span>
+                </button>
+                <button class="mod-btn" onclick="go('stock.html')">
+                    <span class="mod-icon">📦</span>
+                    <span class="mod-name">Stock</span>
+                </button>
+                <button class="mod-btn" onclick="go('clients.html')">
+                    <span class="mod-icon">👥</span>
+                    <span class="mod-name">Clients</span>
+                </button>
+                <button class="mod-btn" onclick="go('admin.html')">
+                    <span class="mod-icon">⚙️</span>
+                    <span class="mod-name">Admin</span>
+                </button>
+            </div>
+            <button class="btn-logout-sm" onclick="logout()">Déconnexion</button>
+        </div>
+    </div>
+
+    <script>
+        function go(page) { window.location.href = page; }
+
+        function showSuperMenu() {
+            document.getElementById('login-section').style.display = 'none';
+            document.getElementById('super-section').style.display = 'block';
+        }
+
+        // Si déjà connecté
+        try {
+            const session = localStorage.getItem('SIMPACT_USER');
+            if (session) {
+                const u = JSON.parse(session);
+                if (u.role === 'superadmin') showSuperMenu();
+                else if (u.redirect) window.location.href = u.redirect;
+            }
+        } catch(e) { localStorage.removeItem('SIMPACT_USER'); }
+
+        function attemptLogin() {
+            const id = document.getElementById('login-id').value.trim();
+            const pass = document.getElementById('login-pass').value;
+            const err = document.getElementById('error-msg');
+            err.style.display = 'none';
+
+            const user = login(id, pass);
+            if (user) {
+                if (user.role === 'superadmin') showSuperMenu();
+                else window.location.href = user.redirect;
+            } else {
+                err.style.display = 'block';
+                document.getElementById('login-pass').value = '';
+            }
+        }
+    </script>
+</body>
+</html>

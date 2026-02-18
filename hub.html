@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIMPACT — Centre de Contrôle</title>
+    <script src="users.js?v=2"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        :root { --bg: #0a0a0f; --card: #111118; --text: #f1f0ed; --blue: #1a4fff; --border: #1e1e2a; --muted: #6b7280; }
+        body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; padding: 3rem 2rem; }
+        .container { max-width: 900px; margin: 0 auto; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 3rem; border-bottom: 1px solid var(--border); padding-bottom: 2rem; }
+        .brand { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.8rem; }
+        .brand span { color: var(--blue); }
+        .btn-out { background: transparent; border: 1px solid rgba(255,255,255,0.15); color: #94a3b8; padding: 8px 18px; border-radius: 6px; cursor: pointer; }
+        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+        .mod { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 1.75rem; text-decoration: none; color: var(--text); display: flex; flex-direction: column; gap: 10px; transition: all 0.2s; cursor: pointer; }
+        .mod:hover { border-color: var(--blue); transform: translateY(-3px); background: #16161f; }
+        .mod-icon { font-size: 2rem; }
+        .mod-name { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1rem; }
+        .mod-desc { font-size: 0.82rem; color: var(--muted); line-height: 1.4; }
+        .mod-arrow { color: var(--muted); font-size: 0.8rem; margin-top: auto; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div>
+                <div class="brand">SIMPACT <span>ERP</span></div>
+                <div style="color:var(--muted);font-size:0.85rem;margin-top:6px;">Centre de contrôle — Accès complet</div>
+            </div>
+            <button class="btn-out" onclick="logout()">Déconnexion</button>
+        </div>
+
+        <div class="grid">
+            <a href="commercial.html" class="mod">
+                <div class="mod-icon">💼</div>
+                <div class="mod-name">Commercial</div>
+                <div class="mod-desc">Devis, commandes, approbation des commandes clients</div>
+                <div class="mod-arrow">→ commercial.html</div>
+            </a>
+            <a href="production.html" class="mod">
+                <div class="mod-icon">🏭</div>
+                <div class="mod-name">Atelier</div>
+                <div class="mod-desc">File de production, fiches de fabrication PDF</div>
+                <div class="mod-arrow">→ production.html</div>
+            </a>
+            <a href="compta.html" class="mod">
+                <div class="mod-icon">💰</div>
+                <div class="mod-name">Comptabilité</div>
+                <div class="mod-desc">CA, TVA, encaissements, suivi des paiements</div>
+                <div class="mod-arrow">→ compta.html</div>
+            </a>
+            <a href="stock.html" class="mod">
+                <div class="mod-icon">📦</div>
+                <div class="mod-name">Stock Papier</div>
+                <div class="mod-desc">Gestion des entrées/sorties, alertes, rapport inventaire</div>
+                <div class="mod-arrow">→ stock.html</div>
+            </a>
+            <a href="clients.html" class="mod">
+                <div class="mod-icon">👥</div>
+                <div class="mod-name">Clients</div>
+                <div class="mod-desc">Fiches clients, historique, programme fidélité</div>
+                <div class="mod-arrow">→ clients.html</div>
+            </a>
+            <a href="admin.html" class="mod">
+                <div class="mod-icon">⚙️</div>
+                <div class="mod-name">Administration</div>
+                <div class="mod-desc">Prix, tarifs, utilisateurs, paramètres système</div>
+                <div class="mod-arrow">→ admin.html</div>
+            </a>
+            <a href="client.html" class="mod">
+                <div class="mod-icon">🌐</div>
+                <div class="mod-name">Espace Client</div>
+                <div class="mod-desc">Tester le portail client VIP</div>
+                <div class="mod-arrow">→ client.html</div>
+            </a>
+        </div>
+    </div>
+    <script>checkAuth('superadmin');</script>
+</body>
+</html>

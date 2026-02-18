@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIMPACT — Mon Espace</title>
+    <script src="users.js?v=2"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        :root {
+            --bg: #f5f3ee; --ink: #0a0a0f; --white: #fff;
+            --purple: #6d28d9; --purple-light: #8b5cf6; --purple-pale: #f5f3ff;
+            --green: #059669; --amber: #d97706; --red: #dc2626;
+            --border: #e2ddd5; --muted: #6b7280; --light: #f8f7f4;
+        }
+        body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--ink); min-height: 100vh; }
+
+        /* TOPBAR */
+        .topbar { background: var(--ink); color: white; display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 2rem; position: sticky; top: 0; z-index: 100; }
+        .topbar-brand { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.1rem; display: flex; align-items: center; gap: 10px; }
+        .topbar-brand span { background: var(--purple); padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; }
+        .topbar-right { display: flex; align-items: center; gap: 12px; }
+        .user-chip { background: rgba(255,255,255,0.1); padding: 4px 12px; border-radius: 20px; font-size: 0.85rem; }
+        .btn-logout { background: transparent; border: 1px solid rgba(255,255,255,0.2); color: white; padding: 5px 12px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; }
+        .btn-logout:hover { background: rgba(255,255,255,0.1); }
+
+        /* TABS */
+        .tabs { display: flex; gap: 4px; padding: 1.5rem 2rem 0; max-width: 900px; margin: 0 auto; }
+        .tab-btn { padding: 0.6rem 1.25rem; border: 1.5px solid var(--border); border-radius: 8px 8px 0 0; background: transparent; cursor: pointer; font-family: 'DM Sans', sans-serif; font-weight: 500; font-size: 0.88rem; color: var(--muted); transition: all 0.2s; border-bottom: none; }
+        .tab-btn.active { background: var(--white); color: var(--ink); border-color: var(--border); font-weight: 600; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        /* PAGE */
+        .page { max-width: 900px; margin: 0 auto; padding: 0 2rem 3rem; }
+        .panel { background: var(--white); border: 1px solid var(--border); border-radius: 0 14px 14px 14px; padding: 2rem; }
+
+        /* STATS HEADER */
+        .stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 2rem; }
+        .stat-box { background: var(--light); border: 1px solid var(--border); border-radius: 10px; padding: 1.25rem; text-align: center; }
+        .stat-value { font-family: 'DM Mono', monospace; font-size: 1.6rem; font-weight: 500; color: var(--purple); }
+        .stat-label { font-size: 0.78rem; color: var(--muted); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        /* LOYALTY */
+        .loyalty-bar-wrap { margin-bottom: 2rem; }
+        .loyalty-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .loyalty-label { font-size: 0.82rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
+        .loyalty-badge { font-size: 0.8rem; font-weight: 700; padding: 3px 10px; border-radius: 12px; }
+        .loyalty-bronze { background: #fed7aa; color: #9a3412; }
+        .loyalty-silver { background: #e2e8f0; color: #334155; }
+        .loyalty-gold { background: #fef3c7; color: #92400e; }
+        .loyalty-platinum { background: #ede9fe; color: #5b21b6; }
+        .loyalty-bar { height: 8px; background: #e2e8f0; border-radius: 4px; overflow: hidden; }
+        .loyalty-fill { height: 100%; background: linear-gradient(90deg, var(--purple), var(--purple-light)); border-radius: 4px; transition: width 0.6s ease; }
+        .loyalty-tip { font-size: 0.78rem; color: var(--muted); margin-top: 5px; }
+
+        /* ORDER HISTORY */
+        .order-row { display: flex; justify-content: space-between; align-items: center; padding: 1rem 0; border-bottom: 1px solid var(--border); }
+        .order-row:last-child { border-bottom: none; }
+        .order-info { flex: 1; }
+        .order-prod { font-weight: 600; font-size: 0.92rem; }
+        .order-meta { font-size: 0.78rem; color: var(--muted); margin-top: 3px; }
+        .order-status { display: flex; flex-direction: column; align-items: flex-end; gap: 5px; }
+        .status-badge { font-size: 0.75rem; font-weight: 600; padding: 3px 10px; border-radius: 12px; }
+        .status-prod { background: #dbeafe; color: #1e40af; }
+        .status-done { background: #dcfce7; color: #166534; }
+        .status-wait { background: #fef3c7; color: #92400e; }
+        .order-price { font-family: 'DM Mono', monospace; font-size: 0.9rem; font-weight: 500; }
+
+        /* COMMANDE FORM */
+        .form-group { margin-bottom: 1.1rem; }
+        .form-group label { display: block; font-size: 0.8rem; font-weight: 500; color: var(--muted); margin-bottom: 0.4rem; text-transform: uppercase; letter-spacing: 0.5px; }
+        .form-group select, .form-group input, .form-group textarea {
+            width: 100%; padding: 0.75rem 0.9rem;
+            background: var(--light); border: 1.5px solid var(--border);
+            border-radius: 8px; font-family: 'DM Sans', sans-serif;
+            font-size: 0.92rem; color: var(--ink); outline: none; transition: border-color 0.2s;
+        }
+        .form-group select:focus, .form-group input:focus, .form-group textarea:focus { border-color: var(--purple); background: white; }
+        .option-group { display: none; background: var(--purple-pale); padding: 1.25rem; border-radius: 10px; border: 1px solid #ddd6fe; margin-bottom: 1rem; animation: fadeUp 0.25s ease; }
+        .option-group.active { display: block; }
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+        .radio-row { display: flex; gap: 8px; }
+        .radio-opt { flex: 1; }
+        .radio-opt input { display: none; }
+        .radio-opt label { display: flex; align-items: center; justify-content: center; padding: 0.6rem; border: 1.5px solid var(--border); border-radius: 7px; cursor: pointer; font-size: 0.85rem; font-weight: 500; background: white; transition: all 0.15s; }
+        .radio-opt input:checked + label { background: var(--purple); color: white; border-color: var(--purple); }
+
+        .price-box { background: var(--ink); color: white; padding: 1.5rem; border-radius: 12px; text-align: center; margin: 1.5rem 0; }
+        .price-ht { font-family: 'DM Mono', monospace; font-size: 2rem; color: #a78bfa; }
+        .price-sub { font-size: 0.8rem; color: rgba(255,255,255,0.5); margin-top: 4px; }
+
+        .btn-calc { width: 100%; padding: 0.9rem; background: transparent; border: 1.5px solid var(--purple); color: var(--purple); border-radius: 9px; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.92rem; cursor: pointer; transition: 0.2s; margin-bottom: 0.75rem; }
+        .btn-calc:hover { background: var(--purple); color: white; }
+        .btn-order { width: 100%; padding: 1rem; background: var(--green); color: white; border: none; border-radius: 9px; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1rem; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 14px rgba(5,150,105,0.25); }
+        .btn-order:hover { background: #047857; transform: translateY(-1px); }
+        .btn-order:disabled { background: #d1d5db; cursor: not-allowed; box-shadow: none; transform: none; }
+
+        .pao-section { border: 1.5px dashed var(--purple-light); padding: 1.25rem; border-radius: 10px; background: var(--purple-pale); margin-bottom: 1rem; }
+        .pao-desc { font-size: 0.8rem; color: var(--muted); margin-top: 5px; font-style: italic; }
+
+        /* SUCCESS */
+        .success-banner { background: #dcfce7; border: 1px solid #86efac; color: #166534; padding: 1rem 1.25rem; border-radius: 10px; margin-bottom: 1rem; display: none; font-weight: 500; }
+    </style>
+</head>
+<body>
+
+<div class="topbar">
+    <div class="topbar-brand">SIMPACT <span>ESPACE CLIENT</span></div>
+    <div class="topbar-right">
+        <span class="user-chip">👤 <span id="client-name-display">—</span></span>
+        <button class="btn-logout" onclick="logout()">Déconnexion</button>
+    </div>
+</div>
+
+<div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('tab-order', this)">✏️ Commander</button>
+    <button class="tab-btn" onclick="switchTab('tab-history', this)">📦 Mes commandes</button>
+    <button class="tab-btn" onclick="switchTab('tab-account', this)">⭐ Mon compte</button>
+</div>
+
+<div class="page">
+    <div class="panel">
+
+        <!-- ── COMMANDER ── -->
+        <div id="tab-order" class="tab-content active">
+            <div id="success-banner" class="success-banner">✅ Votre commande a bien été envoyée ! Nous vous contacterons sous 24h pour confirmation.</div>
+
+            <div class="form-group">
+                <label>Je souhaite commander</label>
+                <select id="prod-type" onchange="resetPrice(); showOptions();">
+                    <option value="">— Sélectionner un produit —</option>
+                    <option value="flyer">Flyers</option>
+                    <option value="carte">Cartes de visite</option>
+                    <option value="depliant">Dépliants 3 volets</option>
+                    <option value="entete">Papier à en-tête</option>
+                    <option value="brochure">Brochure couleur</option>
+                    <option value="livre">Livre N&B</option>
+                    <option value="affiches">Affiches Grand Format</option>
+                </select>
+            </div>
+            <div class="form-group"><label>Quantité</label><input type="number" id="qty" placeholder="Ex: 500" oninput="resetPrice()"></div>
+
+            <!-- OPTIONS FLYER -->
+            <div id="flyer-options" class="option-group"><div class="form-group"><label>Impression</label><div class="radio-row"><div class="radio-opt"><input type="radio" name="flyer-type" value="recto" id="fr" checked><label for="fr">Recto</label></div><div class="radio-opt"><input type="radio" name="flyer-type" value="rectoVerso" id="frv"><label for="frv">Recto / Verso</label></div></div></div><div class="form-group"><label>Papier</label><select id="flyer-paper"><option value="couche-90-mat">Couché 90gr Mat</option><option value="couche-90-brillant">Couché 90gr Brillant</option><option value="couche-115-mat">Couché 115gr Mat</option><option value="couche-115-brillant">Couché 115gr Brillant</option><option value="couche-135-mat">Couché 135gr Mat</option><option value="couche-135-brillant">Couché 135gr Brillant</option><option value="couche-170-mat">Couché 170gr Mat</option><option value="couche-170-brillant">Couché 170gr Brillant</option></select></div></div>
+            <!-- OPTIONS CARTE -->
+            <div id="carte-options" class="option-group"><div class="form-group"><label>Finition</label><div class="radio-row"><div class="radio-opt"><input type="radio" name="carte-finish" value="recto" id="cr" checked><label for="cr">Standard</label></div><div class="radio-opt"><input type="radio" name="carte-finish" value="pellicule" id="cp"><label for="cp">Pelliculé</label></div></div></div><div class="form-group"><label>Papier</label><select id="carte-paper"><option value="couche-300-mat">Couché 300gr Mat</option><option value="couche-300-brillant">Couché 300gr Brillant</option><option value="couche-350-mat">Couché 350gr Mat</option><option value="couche-350-brillant">Couché 350gr Brillant</option></select></div></div>
+            <!-- OPTIONS DÉPLIANT -->
+            <div id="depliant-options" class="option-group"><div class="form-group"><label>Papier</label><select id="depliant-paper"><option value="couche-115-mat">Couché 115gr Mat</option><option value="couche-115-brillant">Couché 115gr Brillant</option><option value="couche-135-mat">Couché 135gr Mat</option><option value="couche-135-brillant">Couché 135gr Brillant</option><option value="couche-170-mat">Couché 170gr Mat</option><option value="couche-170-brillant">Couché 170gr Brillant</option></select></div></div>
+            <!-- OPTIONS EN-TÊTE -->
+            <div id="entete-options" class="option-group"><div class="form-group"><label>Papier</label><select id="entete-paper"><option value="offset-80">Offset 80gr Standard</option><option value="offset-100">Offset 100gr Premium</option></select></div></div>
+            <!-- OPTIONS BROCHURE -->
+            <div id="brochure-options" class="option-group"><div class="form-group"><label>Format</label><select id="brochure-format"><option value="a4">A4</option><option value="a5">A5</option></select></div><div class="form-group"><label>Nombre de pages</label><input type="number" id="brochure-pages" placeholder="Multiple de 4 (ex: 12)"></div><div class="form-group"><label>Papier intérieur</label><select id="brochure-interior-paper"><option value="couche-90-mat">Couché 90gr Mat</option><option value="couche-115-mat">Couché 115gr Mat</option><option value="couche-135-mat">Couché 135gr Mat</option><option value="offset-80">Offset 80gr</option></select></div><div class="form-group"><label>Papier couverture</label><select id="brochure-cover-paper"><option value="couche-250-mat">Couché 250gr Mat</option><option value="couche-300-mat">Couché 300gr Mat</option><option value="couche-350-mat">Couché 350gr Mat</option></select></div><div class="form-group"><label>Couverture</label><div class="radio-row"><div class="radio-opt"><input type="radio" name="brochure-cover-type" value="recto" id="bcr" checked><label for="bcr">Recto</label></div><div class="radio-opt"><input type="radio" name="brochure-cover-type" value="rectoVerso" id="bcrv"><label for="bcrv">R/V</label></div></div></div><div class="form-group"><label>Reliure</label><select id="brochure-finition"><option value="Piquée à cheval">Piquée à cheval (Agrafé)</option><option value="Dos carré collé">Dos carré collé</option><option value="Spirale">Spirale</option></select></div><div class="form-group"><label>Pelliculage couverture</label><div class="radio-row"><div class="radio-opt"><input type="radio" name="brochure-pelliculage" value="sans" id="bps" checked><label for="bps">Non</label></div><div class="radio-opt"><input type="radio" name="brochure-pelliculage" value="avec" id="bpa"><label for="bpa">Oui</label></div></div></div></div>
+            <!-- OPTIONS LIVRE -->
+            <div id="livre-options" class="option-group"><div class="form-group"><label>Format</label><select id="livre-format"><option value="a4">A4</option><option value="a5">A5</option></select></div><div class="form-group"><label>Nombre de pages</label><input type="number" id="livre-pages"></div><div class="form-group"><label>Intérieur</label><select id="livre-interior-paper"><option value="offset-80">Offset 80gr</option><option value="offset-100">Offset 100gr Premium</option></select></div><div class="form-group"><label>Couverture</label><select id="livre-cover-paper"><option value="couche-250-mat">Couché 250gr Mat</option><option value="couche-300-mat">Couché 300gr Mat</option><option value="couche-350-mat">Couché 350gr Mat</option></select></div><div class="form-group"><label>Impression couverture</label><div class="radio-row"><div class="radio-opt"><input type="radio" name="livre-cover-type" value="recto" id="lcr" checked><label for="lcr">Recto</label></div><div class="radio-opt"><input type="radio" name="livre-cover-type" value="rectoVerso" id="lcrv"><label for="lcrv">R/V</label></div></div></div><div class="form-group"><label>Pelliculage</label><div class="radio-row"><div class="radio-opt"><input type="radio" name="livre-pelliculage" value="sans" id="lps" checked><label for="lps">Non</label></div><div class="radio-opt"><input type="radio" name="livre-pelliculage" value="avec" id="lpa"><label for="lpa">Oui</label></div></div></div></div>
+            <!-- OPTIONS AFFICHES -->
+            <div id="affiches-options" class="option-group"><div class="form-group"><label>Format</label><select id="affiche-format"><option value="a3">A3 (30×42 cm)</option><option value="a3plus">A3+ (32×48 cm)</option></select></div><div class="form-group"><label>Papier</label><select id="affiche-paper"><option value="couche-135-mat">Couché 135gr Mat</option><option value="couche-135-brillant">Couché 135gr Brillant</option><option value="couche-170-mat">Couché 170gr Mat</option><option value="couche-170-brillant">Couché 170gr Brillant</option></select></div></div>
+
+            <!-- PAO -->
+            <div class="pao-section">
+                <div class="form-group" style="margin-bottom:0.5rem;">
+                    <label>📁 Fichier d'impression</label>
+                    <input type="file" id="file-upload" accept=".pdf,.ai,.zip,.png,.jpg">
+                </div>
+                <div class="form-group" style="margin-bottom:0;">
+                    <label>🎨 Service Création Graphique (PAO)</label>
+                    <select id="pao-service" onchange="resetPrice()">
+                        <option value="none">J'ai mon fichier PDF prêt (Gratuit)</option>
+                        <option value="conception">✨ Conception complète</option>
+                        <option value="layout">📄 Mise en page</option>
+                        <option value="correction">🔍 Correction simple</option>
+                    </select>
+                    <p id="pao-desc" class="pao-desc">Aucun frais supplémentaire.</p>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Remarques / Instructions</label>
+                <textarea id="desc" rows="3" placeholder="Découpe spéciale, couleur Pantone, livraison urgente..."></textarea>
+            </div>
+
+            <button class="btn-calc" onclick="calculateQuote()">💰 Estimer mon prix</button>
+            <div class="price-box">
+                <div class="price-ht" id="price-display">—</div>
+                <div class="price-sub" id="price-sub">Estimez votre prix ci-dessus</div>
+            </div>
+            <button class="btn-order" id="btn-order" onclick="submitClientOrder()" disabled>✅ Envoyer ma commande</button>
+        </div>
+
+        <!-- ── HISTORIQUE ── -->
+        <div id="tab-history" class="tab-content">
+            <div id="history-content"><p style="text-align:center;color:var(--muted);padding:2rem;">Chargement...</p></div>
+        </div>
+
+        <!-- ── MON COMPTE ── -->
+        <div id="tab-account" class="tab-content">
+            <div id="account-content"></div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    const user = checkAuth('client');
+    if (user) {
+        document.getElementById('client-name-display').textContent = user.name;
+    }
+
+    let TARIFS = {};
+    let TVA_RATE = 0.19;
+    let currentPrice = 0;
+    const PRIX_FIXES = { pelliculage: 0.1, feuille_nb: 0.2, offset_100: 0.014, gramme_couche: 0.0007, min_price: 28 };
+    const PAO_DATA = { 'flyer': { conc: 4, corr: 2, layout: 2 }, 'carte': { conc: 1, corr: 0.5, layout: 0.5 }, 'depliant': { conc: 8, corr: 3, layout: 3 }, 'entete': { conc: 4, corr: 2, layout: 2 }, 'affiches': { conc: 7, corr: 1, layout: 1 }, 'brochure': { conc: 8, corr: 0.17, layout: 0.34, perPage: true }, 'livre': { conc: 12, corr: 0.17, layout: 0.25, perPage: true } };
+    const PAO_RATES = { 'conception': 55, 'layout': 40, 'correction': 40 };
+
+    async function loadPrices() {
+        try {
+            const r = await fetch('prix_config.json');
+            const data = await r.json();
+            TARIFS = { flyer: { recto: data.tarifs.flyer.recto, rectoVerso: data.tarifs.flyer.rectoVerso }, carte: { recto: data.tarifs.carte.recto, pellicule: data.tarifs.carte.pellicule }, depliant: data.tarifs.depliant, entete: data.tarifs.entete, affiche: data.tarifs.affiche || [], prix_couverture_livre: data.prix_couverture_livre || { a4: { recto: 1.3, rectoVerso: 1.5 }, a5: { recto: 0.65, rectoVerso: 0.75 } } };
+            TVA_RATE = data.tva_rate || 0.19;
+        } catch(e) {}
+    }
+    loadPrices();
+
+    function showOptions() {
+        document.querySelectorAll('.option-group').forEach(el => el.classList.remove('active'));
+        const type = document.getElementById('prod-type').value;
+        if (type) { const g = document.getElementById(type + '-options'); if (g) g.classList.add('active'); }
+    }
+
+    function getPaperName(v) {
+        if (!v) return '';
+        if (v === 'offset-80') return 'Offset 80gr'; if (v === 'offset-100') return 'Offset 100gr Premium';
+        if (v.startsWith('couche-')) { const p = v.split('-'); return `Couché ${p[1]}gr ${p[2]==='mat'?'Mat':'Brillant'}`; }
+        return v;
+    }
+    function getPaperNameById(id) { const e = document.getElementById(id); return e ? getPaperName(e.value) : ''; }
+    function calcSurcharge(t, n) {
+        if (!t || !n) return 0;
+        if (t === 'offset-100') return n * PRIX_FIXES.offset_100;
+        if (t.startsWith('couche-')) { const g = parseInt(t.split('-')[1]); if (g > 90) return n * (g-90) * PRIX_FIXES.gramme_couche; }
+        return 0;
+    }
+    function getSheetPrice(s) { if (s<25) return 3; if (s<50) return 2.5; if (s<100) return 2; if (s<200) return 1.9; if (s<300) return 1.8; if (s<400) return 1.7; if (s<500) return 1.6; return 1.5; }
+    function smooth(arr, qty) {
+        if (!arr||!arr.length) return 0;
+        let lo=arr[0], hi=arr[arr.length-1];
+        for (let t of arr) { if (t.qty<=qty) lo=t; }
+        for (let t of arr) { if (t.qty>=qty) { hi=t; break; } }
+        if (lo.qty===hi.qty) return lo.price;
+        return lo.price + (hi.price-lo.price) * (qty-lo.qty)/(hi.qty-lo.qty);
+    }
+    function resetPrice() { currentPrice = 0; document.getElementById('price-display').textContent = '—'; document.getElementById('price-sub').textContent = 'Estimez votre prix ci-dessus'; document.getElementById('btn-order').disabled = true; }
+
+    function calculateQuote() {
+        const type = document.getElementById('prod-type').value;
+        const qty = parseInt(document.getElementById('qty').value);
+        if (!type || !qty || qty <= 0) return alert('Sélectionnez un produit et une quantité.');
+        let price = 0, config = '';
+        const prodName = document.getElementById('prod-type').selectedOptions[0].text;
+        try {
+            if (type === 'flyer') { const mode = document.querySelector('input[name="flyer-type"]:checked').value; const paper = document.getElementById('flyer-paper').value; price = smooth(TARIFS.flyer[mode], qty) + calcSurcharge(paper, qty); config = `Impression: ${mode==='recto'?'Recto':'Recto/Verso'}\nPapier: ${getPaperName(paper)}`; }
+            else if (type === 'carte') { const fin = document.querySelector('input[name="carte-finish"]:checked').value; const paper = document.getElementById('carte-paper').value; price = smooth(TARIFS.carte[fin], qty) + calcSurcharge(paper, Math.ceil(qty/10)); config = `Finition: ${fin==='recto'?'Standard':'Pelliculé'}\nPapier: ${getPaperName(paper)}`; }
+            else if (type === 'depliant') { const paper = document.getElementById('depliant-paper').value; price = smooth(TARIFS.depliant, qty) + calcSurcharge(paper, qty); config = `3 Volets A4\nPapier: ${getPaperName(paper)}`; }
+            else if (type === 'entete') { const paper = document.getElementById('entete-paper').value; price = smooth(TARIFS.entete, qty) + calcSurcharge(paper, qty); config = `Format A4\nPapier: ${getPaperName(paper)}`; }
+            else if (type === 'brochure') {
+                const pages = parseInt(document.getElementById('brochure-pages').value)||8;
+                const format = document.getElementById('brochure-format').value;
+                const covType = document.querySelector('input[name="brochure-cover-type"]:checked').value;
+                const pell = document.querySelector('input[name="brochure-pelliculage"]:checked').value;
+                const pInt = document.getElementById('brochure-interior-paper').value;
+                const pCov = document.getElementById('brochure-cover-paper').value;
+                const fin = document.getElementById('brochure-finition').value;
+                let sInt = Math.ceil((pages/(format==='a4'?4:8))*qty), sCov = Math.ceil((format==='a4'?1:0.5)*qty);
+                let tot = sInt+sCov;
+                price = sInt*getSheetPrice(tot) + sCov*(covType==='recto'?getSheetPrice(tot)-0.2:getSheetPrice(tot)) + calcSurcharge(pInt,sInt) + calcSurcharge(pCov,sCov) + (pell==='avec'?qty*PRIX_FIXES.pelliculage:0);
+                config = `Format ${format.toUpperCase()} — ${pages} Pages\nReliure: ${fin}\nPapier intérieur: ${getPaperName(pInt)}\nPapier couverture: ${getPaperName(pCov)}`;
+            }
+            else if (type === 'livre') {
+                const pages = parseInt(document.getElementById('livre-pages').value)||50;
+                const format = document.getElementById('livre-format').value;
+                const covType = document.querySelector('input[name="livre-cover-type"]:checked').value;
+                const pell = document.querySelector('input[name="livre-pelliculage"]:checked').value;
+                const pInt = document.getElementById('livre-interior-paper').value;
+                const pCov = document.getElementById('livre-cover-paper').value;
+                let sInt = Math.ceil((pages/(format==='a4'?4:8))*qty);
+                price = sInt*PRIX_FIXES.feuille_nb + calcSurcharge(pInt,sInt) + qty*TARIFS.prix_couverture_livre[format][covType==='recto'?'recto':'rectoVerso'] + (pell==='avec'?qty*PRIX_FIXES.pelliculage:0);
+                config = `Format ${format.toUpperCase()} — ${pages} Pages\nPapier intérieur: ${getPaperName(pInt)}\nPapier couverture: ${getPaperName(pCov)}`;
+            }
+            else if (type === 'affiches') {
+                const fmt = document.getElementById('affiche-format').value;
+                const paper = document.getElementById('affiche-paper').value;
+                let u = smooth(TARIFS.affiche, qty); if (fmt==='a3plus') u*=1.2;
+                price = u*qty + calcSurcharge(paper,qty);
+                config = `Grand Format ${fmt==='a3'?'A3':'A3+'}\nPapier: ${getPaperName(paper)}`;
+            }
+            price = Math.max(price, PRIX_FIXES.min_price);
+
+            // PAO
+            const paoOpt = document.getElementById('pao-service').value;
+            let paoCost = 0;
+            if (paoOpt !== 'none' && PAO_DATA[type]) {
+                const data = PAO_DATA[type]; const rate = PAO_RATES[paoOpt];
+                let key = paoOpt === 'conception' ? 'conc' : paoOpt === 'layout' ? 'layout' : 'corr';
+                let hours = 0;
+                if (data.perPage) {
+                    const pages = type==='brochure'?(parseInt(document.getElementById('brochure-pages').value)||0):(parseInt(document.getElementById('livre-pages').value)||0);
+                    hours = paoOpt==='conception' ? data.conc : data[key]*pages;
+                } else { hours = data[key]; }
+                paoCost = hours * rate;
+                document.getElementById('pao-desc').textContent = `Service PAO: ${hours.toFixed(1)}h → +${paoCost.toFixed(2)} DT`;
+            } else { document.getElementById('pao-desc').textContent = 'Aucun frais supplémentaire.'; }
+
+            const extra = document.getElementById('desc').value.trim();
+            if (extra) config += '\nRemarques: ' + extra;
+
+            const total = price + paoCost;
+            const tva = total * TVA_RATE;
+            currentPrice = total;
+
+            document.getElementById('price-display').textContent = total.toFixed(2) + ' DT HT';
+            document.getElementById('price-sub').textContent = `TVA (19%): ${tva.toFixed(2)} DT — TTC: ${(total+tva).toFixed(2)} DT`;
+            document.getElementById('btn-order').disabled = false;
+
+            window._clientOrderData = {
+                prod: prodName, qty, config,
+                price: total.toFixed(2), tva: tva.toFixed(2), priceTTC: (total+tva).toFixed(2),
+                paoOpt: paoOpt !== 'none' ? paoOpt : null
+            };
+        } catch(e) { console.error(e); alert('Erreur de calcul.'); }
+    }
+
+    function submitClientOrder() {
+        if (!window._clientOrderData || currentPrice <= 0) return;
+        const d = window._clientOrderData;
+        const ref = 'WEB-' + Date.now().toString(36).toUpperCase();
+        const now = new Date();
+        const order = {
+            ref, date: now.toLocaleDateString('fr-FR') + ' ' + now.toLocaleTimeString('fr-FR', {hour:'2-digit',minute:'2-digit'}),
+            client: user.name, clientId: user.id,
+            prod: d.prod, qty: d.qty, desc: d.config,
+            price: d.price, tva: d.tva, priceTTC: d.priceTTC,
+            user: user.name, statusProd: 'À Valider (Web)', statusCompta: 'Non payé',
+            ts: now.toISOString()
+        };
+        saveOrder(order);
+        document.getElementById('success-banner').style.display = 'block';
+        document.getElementById('btn-order').disabled = true;
+        document.getElementById('btn-order').textContent = '✅ Commande envoyée';
+        setTimeout(() => {
+            document.getElementById('success-banner').style.display = 'none';
+            document.getElementById('btn-order').textContent = '✅ Envoyer ma commande';
+        }, 5000);
+        loadHistory();
+    }
+
+    // HISTORIQUE
+    function loadHistory() {
+        const orders = getOrders().filter(o => o.clientId === user.id || o.client === user.name);
+        const el = document.getElementById('history-content');
+        if (!orders.length) { el.innerHTML = '<p style="text-align:center;color:var(--muted);padding:2rem;">Vous n\'avez pas encore de commandes. Passez votre première commande !</p>'; return; }
+
+        const statusClass = (s) => s === 'Terminé' ? 'status-done' : s === 'En attente' ? 'status-wait' : 'status-prod';
+
+        el.innerHTML = orders.map(o => `
+            <div class="order-row">
+                <div class="order-info">
+                    <div class="order-prod">${o.prod} <span style="color:var(--muted);font-weight:400;">×${o.qty}</span></div>
+                    <div class="order-meta">${o.ref} · ${o.date}</div>
+                </div>
+                <div class="order-status">
+                    <span class="status-badge ${statusClass(o.statusProd)}">${o.statusProd}</span>
+                    <span class="order-price">${o.price} DT HT</span>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    // MON COMPTE
+    function loadAccount() {
+        const orders = getOrders().filter(o => o.clientId === user.id || o.client === user.name);
+        const totalCA = orders.reduce((s, o) => s + parseFloat(o.price || 0), 0);
+        const count = orders.length;
+        const products = {};
+        orders.forEach(o => { products[o.prod] = (products[o.prod] || 0) + 1; });
+        const topProd = Object.keys(products).sort((a,b) => products[b]-products[a])[0] || '—';
+
+        // Niveau fidélité
+        let level = 'Bronze', levelClass = 'loyalty-bronze', nextThreshold = 5, progress = 0;
+        if (count >= 20) { level = 'Platinum'; levelClass = 'loyalty-platinum'; nextThreshold = 20; progress = 100; }
+        else if (count >= 10) { level = 'Gold'; levelClass = 'loyalty-gold'; nextThreshold = 20; progress = ((count-10)/(20-10))*100; }
+        else if (count >= 5) { level = 'Silver'; levelClass = 'loyalty-silver'; nextThreshold = 10; progress = ((count-5)/(10-5))*100; }
+        else { progress = (count/5)*100; }
+
+        const el = document.getElementById('account-content');
+        el.innerHTML = `
+            <div style="margin-bottom:1.5rem;">
+                <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:1.3rem;margin-bottom:4px;">${user.name}</div>
+                <div style="color:var(--muted);font-size:0.85rem;">Client Simpact · Membre depuis 2026</div>
+            </div>
+
+            <div class="stats-row">
+                <div class="stat-box">
+                    <div class="stat-value">${count}</div>
+                    <div class="stat-label">Commandes</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value">${totalCA.toFixed(0)}<span style="font-size:0.9rem"> DT</span></div>
+                    <div class="stat-label">Total dépensé</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value" style="font-size:1rem;padding-top:4px;">${topProd !== '—' ? topProd.split(' ')[0] : '—'}</div>
+                    <div class="stat-label">Produit favori</div>
+                </div>
+            </div>
+
+            <div class="loyalty-bar-wrap">
+                <div class="loyalty-header">
+                    <span class="loyalty-label">⭐ Programme fidélité</span>
+                    <span class="loyalty-badge ${levelClass}">${level}</span>
+                </div>
+                <div class="loyalty-bar"><div class="loyalty-fill" style="width:${progress}%"></div></div>
+                <div class="loyalty-tip">${level !== 'Platinum' ? `Encore ${nextThreshold - count} commandes pour atteindre le niveau suivant` : '🎉 Vous êtes au niveau maximum — Merci de votre fidélité !'}</div>
+            </div>
+
+            <div style="background:var(--purple-pale);border:1px solid #ddd6fe;border-radius:10px;padding:1.25rem;">
+                <div style="font-weight:600;font-size:0.9rem;color:var(--purple);margin-bottom:0.75rem;">🎁 Vos avantages ${level}</div>
+                ${level === 'Bronze' ? '<p style="font-size:0.85rem;color:var(--muted);">Atteignez 5 commandes pour débloquer des avantages Silver.</p>' : ''}
+                ${level === 'Silver' ? '<p style="font-size:0.85rem;">✅ Priorité sur les délais standard<br>✅ Devis prioritaires</p>' : ''}
+                ${level === 'Gold' ? '<p style="font-size:0.85rem;">✅ Remise 5% sur la prochaine commande<br>✅ Livraison express offerte une fois/mois<br>✅ Commercial dédié</p>' : ''}
+                ${level === 'Platinum' ? '<p style="font-size:0.85rem;">✅ Remise 10% permanente<br>✅ Délai express prioritaire<br>✅ Ligne directe PDG<br>✅ Corrections PAO offertes</p>' : ''}
+            </div>
+        `;
+    }
+
+    // TABS
+    function switchTab(tabId, btn) {
+        document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(tabId).classList.add('active');
+        btn.classList.add('active');
+        if (tabId === 'tab-history') loadHistory();
+        if (tabId === 'tab-account') loadAccount();
+    }
+
+    // Init
+    loadHistory();
+</script>
+</body>
+</html>
