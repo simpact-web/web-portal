@@ -579,13 +579,14 @@
     function validerWeb(ref) {
         if (!confirm('Approuver et envoyer en production ?')) return;
         updateOrderStatus(ref, 'En attente', 'prod');
-        loadWebOrders();
+        // Petit délai pour laisser le localStorage se mettre à jour avant de relire
+        setTimeout(loadWebOrders, 50);
     }
 
     function refuserWeb(ref) {
         if (!confirm('Refuser cette commande client ?')) return;
         updateOrderStatus(ref, 'Annulée', 'prod');
-        loadWebOrders();
+        setTimeout(loadWebOrders, 50);
     }
 
     // PDF

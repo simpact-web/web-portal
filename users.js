@@ -253,12 +253,15 @@ function saveOrder(orderData) {
 }
 
 function updateOrderStatus(ref, newStatus, type) {
+    // Lecture unique de la liste, modification, écriture directe en une seule opération
+    // Evite le double-lecture qui causait le bug "valider 2 fois"
     const orders = getOrders();
-    const order = orders.find(o => o.ref === ref);
-    if (order) {
-        if (type === 'prod') order.statusProd = newStatus;
-        if (type === 'compta') order.statusCompta = newStatus;
-        saveOrder(order);
+    const idx = orders.findIndex(o => o.ref === ref);
+    if (idx !== -1) {
+        if (type === 'prod')   orders[idx].statusProd   = newStatus;
+        if (type === 'compta') orders[idx].statusCompta = newStatus;
+        orders[idx].ts = new Date().toISOString();
+        localStorage.setItem('SIMPACT_ORDERS', JSON.stringify(orders));
     }
 }
 
