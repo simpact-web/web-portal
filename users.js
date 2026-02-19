@@ -8,39 +8,77 @@ const CLOUD_API_URL = "";
 //  LISTE DES UTILISATEURS PERMANENTS
 //  Ces utilisateurs sont toujours présents, même après
 //  redémarrage, changement de PC ou vidage de cache.
-//
-//  Pour ajouter un nouveau client :
-//  1. Copiez une ligne "client" existante
-//  2. Changez id, pass (via hashPass), name
-//  3. Remplacez ce fichier sur GitHub
 // ─────────────────────────────────────────────────────────────
 const DEFAULT_USERS = [
 
     // ── ÉQUIPE INTERNE ──────────────────────────────────────
-    { id: 'youssef',  pass: 'h_fmbfji',  role: 'superadmin', name: 'Youssef (PDG)',      redirect: 'hub.html'        },
-    { id: 'admin01',  pass: 'h_riha7v',  role: 'admin',      name: 'Admin Simpact',      redirect: 'admin.html'      },
-    { id: 'prod01',   pass: 'h_be518k',  role: 'production', name: 'Chef Atelier',       redirect: 'production.html' },
-    { id: 'compta01', pass: 'h_i22pok',  role: 'compta',     name: 'Service Compta',     redirect: 'compta.html'     },
-    { id: 'comm01',   pass: 'h_1uqk40',  role: 'commercial', name: 'Commercial 1',       redirect: 'commercial.html' },
+    { id: 'youssef',   pass: 'h_fmbfji',  role: 'superadmin', name: 'Youssef (PDG)',      redirect: 'hub.html'        },
+    { id: 'admin01',   pass: 'h_riha7v',  role: 'admin',      name: 'Admin Simpact',      redirect: 'admin.html'      },
+    { id: 'prod01',    pass: 'h_be518k',  role: 'production', name: 'Chef Atelier',       redirect: 'production.html' },
+    { id: 'compta01',  pass: 'h_i22pok',  role: 'compta',     name: 'Service Compta',     redirect: 'compta.html'     },
+    { id: 'comm01',    pass: 'h_1uqk40',  role: 'commercial', name: 'Commercial 1',       redirect: 'commercial.html' },
 
-    // ── CLIENTS VIP ─────────────────────────────────────────
-    { id: 'client01', pass: 'h_vho8e1',  role: 'client',     name: 'Agence Pub Alpha',   redirect: 'client.html'     },
-    { id: 'client02', pass: 'h_wcoy',    role: 'client',     name: 'Restaurant Le Chef', redirect: 'client.html'     },
-    { id: 'uib',      pass: 'h_78v1kg',  role: 'client',     name: 'UIB BANK',           redirect: 'client.html'     }
+    // ── CLIENTS EXISTANTS ───────────────────────────────────
+    { id: 'client01',  pass: 'h_vho8e1',  role: 'client',     name: 'Agence Pub Alpha',   redirect: 'client.html'     },
+    { id: 'client02',  pass: 'h_wcoy',    role: 'client',     name: 'Restaurant Le Chef', redirect: 'client.html'     },
+    { id: 'uib',       pass: 'h_78v1kg',  role: 'client',     name: 'UIB BANK',           redirect: 'client.html'     },
 
-    // ← Ajoutez vos prochains clients ici, au-dessus de cette ligne
+    // ── BANQUES ─────────────────────────────────────────────
+    { id: 'ubci',      pass: 'h_t3dh6d',  role: 'client',     name: 'UBCI',               redirect: 'client.html'     },
+    { id: 'attijari',  pass: 'h_jdkj1k',  role: 'client',     name: 'Attijari',           redirect: 'client.html'     },
+    { id: 'atb',       pass: 'h_bgunsf',  role: 'client',     name: 'ATB Bank',           redirect: 'client.html'     },
+    { id: 'amen',      pass: 'h_tqcdyh',  role: 'client',     name: 'Amen Bank',          redirect: 'client.html'     },
+    { id: 'biat',      pass: 'h_9lxa64',  role: 'client',     name: 'BIAT',               redirect: 'client.html'     },
+    { id: 'zitouna',   pass: 'h_ly9vb4',  role: 'client',     name: 'Zitouna Bank',       redirect: 'client.html'     },
+    { id: 'BTK',       pass: 'h_3chrrv',  role: 'client',     name: 'BTK Bank',           redirect: 'client.html'     },
+    { id: 'QNB',       pass: 'h_7fvzhj',  role: 'client',     name: 'QNB Bank',           redirect: 'client.html'     },
+    { id: 'TSB',       pass: 'h_h6t3uj',  role: 'client',     name: 'TSB Bank',           redirect: 'client.html'     },
+    { id: 'BTE',       pass: 'h_39707p',  role: 'client',     name: 'BTE Bank',           redirect: 'client.html'     },
+    { id: 'BT',        pass: 'h_mu00bw',  role: 'client',     name: 'BT Bank',            redirect: 'client.html'     },
+
+    // ── ASSURANCES ──────────────────────────────────────────
+    { id: 'star',      pass: 'h_lqsdp0',  role: 'client',     name: 'STAR',               redirect: 'client.html'     },
+    { id: 'astree',    pass: 'h_ypv3de',  role: 'client',     name: 'Astree',             redirect: 'client.html'     },
+    { id: 'comar',     pass: 'h_u8l9cc',  role: 'client',     name: 'Comar',              redirect: 'client.html'     },
+    { id: 'carte',     pass: 'h_3kxakn',  role: 'client',     name: 'La Carte',           redirect: 'client.html'     },
+    { id: 'gat',       pass: 'h_35jj8k',  role: 'client',     name: 'GAT Assurance',      redirect: 'client.html'     },
+    { id: 'maghrebia', pass: 'h_sksay4',  role: 'client',     name: 'Maghrebia',          redirect: 'client.html'     },
+    { id: 'biatassur', pass: 'h_1953mi',  role: 'client',     name: 'Biat Assurance',     redirect: 'client.html'     },
+    { id: 'lloyd',     pass: 'h_9x9ruk',  role: 'client',     name: 'Lloyd Assurances',   redirect: 'client.html'     },
+    { id: 'mae',       pass: 'h_dnh783',  role: 'client',     name: 'MAE Assurance',      redirect: 'client.html'     },
+    { id: 'takaful',   pass: 'h_h5bj18',  role: 'client',     name: 'Zitouna Takaful',    redirect: 'client.html'     },
+    { id: 'takafulia', pass: 'h_qn1ewk',  role: 'client',     name: 'At-Takafulia',       redirect: 'client.html'     }
+
+    // ← Ajoutez vos prochains clients ici
 ];
 
 // ─────────────────────────────────────────────────────────────
 //  RAPPEL DES MOTS DE PASSE
-//  youssef   → youssef123
-//  admin01   → simpact2026
-//  prod01    → atelier
-//  compta01  → facture
+//
+//  ÉQUIPE :
+//  youssef   → youssef123    admin01   → simpact2026
+//  prod01    → atelier       compta01  → facture
 //  comm01    → vente
-//  client01  → client123
-//  client02  → 1234
+//
+//  CLIENTS EXISTANTS :
+//  client01  → client123     client02  → 1234
 //  uib       → uib2026
+//
+//  BANQUES :
+//  ubci      → ubci2026      attijari  → attijari2026
+//  atb       → atb2026       amen      → amen2026
+//  biat      → biat2026      zitouna   → zitouna2026
+//  BTK       → btk2026       QNB       → qnb2026
+//  TSB       → tsb2026       BTE       → bte2026
+//  BT        → bt2026
+//
+//  ASSURANCES :
+//  star      → star2026      astree    → astree2026
+//  comar     → comar2026     carte     → carte2026
+//  gat       → gat2026       maghrebia → maghrebia2026
+//  biatassur → biatassur2026 lloyd     → lloyd2026
+//  mae       → mae2026       takaful   → takaful2026
+//  takafulia → takafulia2026
 // ─────────────────────────────────────────────────────────────
 
 
