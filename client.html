@@ -357,6 +357,18 @@
     }
 
     // HISTORIQUE
+    function formatDate(dateStr) {
+        if (!dateStr) return '—';
+        // Si c'est déjà au format fr (ex: "19/02/2026 17:19"), on le garde
+        if (/^\d{2}\/\d{2}\/\d{4}/.test(dateStr)) return dateStr;
+        // Sinon on reforte depuis un objet Date (cas des anciennes commandes en anglais)
+        try {
+            const d = new Date(dateStr);
+            if (isNaN(d)) return dateStr;
+            return d.toLocaleDateString('fr-FR') + ' ' + d.toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'});
+        } catch(e) { return dateStr; }
+    }
+
     function loadHistory() {
         const orders = getOrders().filter(o => o.clientId === user.id || o.client === user.name);
         const el = document.getElementById('history-content');
@@ -368,7 +380,7 @@
             <div class="order-row">
                 <div class="order-info">
                     <div class="order-prod">${o.prod} <span style="color:var(--muted);font-weight:400;">×${o.qty}</span></div>
-                    <div class="order-meta">${o.ref} · ${o.date}</div>
+                    <div class="order-meta">${o.ref} · ${formatDate(o.date)}</div>
                 </div>
                 <div class="order-status">
                     <span class="status-badge ${statusClass(o.statusProd)}">${o.statusProd}</span>

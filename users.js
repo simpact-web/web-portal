@@ -2,7 +2,16 @@
 // SIMPACT ERP - CORE ENGINE v2.1
 // ============================================================
 
-const CLOUD_API_URL = "";
+const CLOUD_API_URL = ""; // ← Collez ici votre URL Google Apps Script après configuration
+
+// ─── ENVOI VERS GOOGLE SHEETS ───────────────────────────────
+function syncToCloud(type, data) {
+    if (!CLOUD_API_URL || !CLOUD_API_URL.startsWith('http')) return;
+    const fd = new FormData();
+    fd.append('type', type);
+    Object.entries(data).forEach(([k, v]) => fd.append(k, v == null ? '' : v));
+    fetch(CLOUD_API_URL, { method: 'POST', body: fd, mode: 'no-cors' }).catch(() => {});
+}
 
 // ─────────────────────────────────────────────────────────────
 //  LISTE DES UTILISATEURS PERMANENTS
@@ -239,17 +248,13 @@ function saveOrder(orderData) {
     orders.unshift({ ...orderData, ts: orderData.ts || new Date().toISOString() });
     if (orders.length > 500) orders = orders.slice(0, 500);
     localStorage.setItem('SIMPACT_ORDERS', JSON.stringify(orders));
-    if (CLOUD_API_URL && CLOUD_API_URL.startsWith('http')) {
-        const fd = new FormData();
-        Object.entries({
-            Date: orderData.date, Ref: orderData.ref, Client: orderData.client,
-            ClientId: orderData.clientId || '', Produit: orderData.prod, Quantite: orderData.qty,
-            Prix_HT: orderData.price, TVA: orderData.tva || 0, Prix_TTC: orderData.priceTTC || orderData.price,
-            Details: orderData.desc, Commercial: orderData.user,
-            Statut_Prod: orderData.statusProd, Statut_Compta: orderData.statusCompta, Delai: orderData.delai || ''
-        }).forEach(([k, v]) => fd.append(k, v));
-        fetch(CLOUD_API_URL, { method: 'POST', body: fd, mode: 'no-cors' }).catch(() => {});
-    }
+    syncToCloud('commande', {
+        Date: orderData.date, Ref: orderData.ref, Client: orderData.client,
+        ClientId: orderData.clientId || '', Produit: orderData.prod, Quantite: orderData.qty,
+        Prix_HT: orderData.price, TVA: orderData.tva || 0, Prix_TTC: orderData.priceTTC || orderData.price,
+        Details: orderData.desc, Commercial: orderData.user,
+        Statut_Prod: orderData.statusProd, Statut_Compta: orderData.statusCompta, Delai: orderData.delai || ''
+    });
 }
 
 function updateOrderStatus(ref, newStatus, type) {
@@ -262,6 +267,14 @@ function updateOrderStatus(ref, newStatus, type) {
         if (type === 'compta') orders[idx].statusCompta = newStatus;
         orders[idx].ts = new Date().toISOString();
         localStorage.setItem('SIMPACT_ORDERS', JSON.stringify(orders));
+        // Sync le statut mis à jour vers Google Sheets
+        const o = orders[idx];
+        syncToCloud('commande', {
+            Date: o.date, Ref: o.ref, Client: o.client, ClientId: o.clientId||'',
+            Produit: o.prod, Quantite: o.qty, Prix_HT: o.price, TVA: o.tva||0,
+            Prix_TTC: o.priceTTC||o.price, Details: o.desc||'', Commercial: o.user||'',
+            Statut_Prod: o.statusProd, Statut_Compta: o.statusCompta, Delai: o.delai||''
+        });
     }
 }
 
@@ -276,6 +289,13 @@ function saveQuote(quoteData) {
     quotes.unshift(quoteData);
     if (quotes.length > 100) quotes = quotes.slice(0, 100);
     localStorage.setItem('SIMPACT_QUOTES', JSON.stringify(quotes));
+    // Sync vers Google Sheets
+    syncToCloud('devis', {
+        Date: quoteData.date, Ref: quoteData.ref, Client: quoteData.client,
+        Produit: quoteData.prod, Quantite: quoteData.qty,
+        Prix_HT: quoteData.price, TVA: quoteData.tva||0, Prix_TTC: quoteData.priceTTC||quoteData.price,
+        Statut: quoteData.status||'En attente'
+    });
 }
 
 function convertQuoteToOrder(quoteRef) {
@@ -326,6 +346,10 @@ function logActivity(userId, action, details) {
         logs.unshift({ ts: new Date().toISOString(), user: userId, action, details: details || '' });
         if (logs.length > 200) logs = logs.slice(0, 200);
         localStorage.setItem('SIMPACT_LOGS', JSON.stringify(logs));
+        // Sync les connexions vers Google Sheets (utile pour suivi activité)
+        if (action === 'LOGIN' || action === 'LOGOUT') {
+            syncToCloud('log', { user: userId, action, details: details || '' });
+        }
     } catch(e) {}
 }
 
