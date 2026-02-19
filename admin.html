@@ -174,6 +174,23 @@
                 <div class="field-group"><label>Taux TVA (%)</label><input type="number" id="prix-tva" step="0.01"></div>
             </div>
         </div>
+        <!-- SECTION SAUVEGARDE -->
+        <div style="border:1px solid rgba(34,197,94,0.3); border-radius:12px; padding:1.5rem; background:rgba(34,197,94,0.04); margin-bottom:1.5rem;">
+            <div style="color:#22c55e; font-family:'Syne',sans-serif; font-weight:700; margin-bottom:0.5rem; font-size:1rem;">💾 Sauvegarde de la base de données</div>
+            <p style="color:var(--muted); font-size:0.85rem; margin-bottom:1rem; line-height:1.5;">
+                Exportez votre base (utilisateurs, commandes, devis) en fichier JSON.<br>
+                Sauvegardez-le sur votre Google Drive ou clé USB.<br>
+                <strong style="color:var(--fg);">Importez-le</strong> sur n'importe quel PC ou navigateur pour tout retrouver.
+            </p>
+            <button class="btn-nav" onclick="exportDatabase()" style="border-color:#22c55e; color:#22c55e; margin-right:8px;">
+                💾 Exporter la base complète
+            </button>
+            <label class="btn-nav" style="border-color:rgba(99,102,241,0.6); color:#818cf8; cursor:pointer; display:inline-block;">
+                📂 Importer un backup
+                <input type="file" accept=".json" style="display:none;" onchange="importDatabase(this.files[0], ()=>{ renderUsersTable(); alert('Rechargez la page pour voir tous les changements.'); })">
+            </label>
+        </div>
+
         <div class="danger-zone">
             <div class="danger-title">⚠️ Zone danger</div>
             <button class="btn-nav red" onclick="resetOrders()" style="margin-right:8px;">🗑️ Vider toutes les commandes</button>
