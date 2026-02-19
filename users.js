@@ -1,37 +1,53 @@
 // ============================================================
 // SIMPACT ERP - CORE ENGINE v2.1
 // ============================================================
-// SOLUTION PERSISTANCE :
-//  • Les utilisateurs DEFAULT_USERS ci-dessous sont TOUJOURS présents
-//    même après redémarrage, changement de PC ou vidage de cache.
-//  • Utilisateurs ajoutés via Admin → sauvegardés dans localStorage
-//    ET fusionnés avec DEFAULT_USERS au démarrage.
-//  • Utilisez "💾 Exporter la base" dans Admin pour sauvegarder
-//    sur votre Google Drive / clé USB. "📂 Importer" pour restaurer.
-// ============================================================
 
-const CLOUD_API_URL = ""; // Optionnel : URL Google Apps Script
+const CLOUD_API_URL = "";
 
 // ─────────────────────────────────────────────────────────────
-//  UTILISATEURS PERMANENTS — Modifiez ici pour les rendre fixes
-//  (Mettez à jour ce fichier sur GitHub après chaque ajout client)
+//  LISTE DES UTILISATEURS PERMANENTS
+//  Ces utilisateurs sont toujours présents, même après
+//  redémarrage, changement de PC ou vidage de cache.
+//
+//  Pour ajouter un nouveau client :
+//  1. Copiez une ligne "client" existante
+//  2. Changez id, pass (via hashPass), name
+//  3. Remplacez ce fichier sur GitHub
 // ─────────────────────────────────────────────────────────────
 const DEFAULT_USERS = [
-    { id: 'youssef',  pass: 'h_z2yk9k',   role: 'superadmin', name: 'Youssef (PDG)',      redirect: 'hub.html' },
-    { id: 'admin01',  pass: 'h_1bg37b8',  role: 'admin',      name: 'Admin Simpact',       redirect: 'admin.html' },
-    { id: 'prod01',   pass: 'h_3pwmvl',   role: 'production', name: 'Chef Atelier',        redirect: 'production.html' },
-    { id: 'compta01', pass: 'h_35z5brd',  role: 'compta',     name: 'Service Compta',      redirect: 'compta.html' },
-    { id: 'comm01',   pass: 'h_56b6g5',   role: 'commercial', name: 'Commercial 1',        redirect: 'commercial.html' },
-    { id: 'client01', pass: 'h_1fewca4',  role: 'client',     name: 'Agence Pub Alpha',    redirect: 'client.html' },
-    { id: 'client02', pass: 'h_r3q',      role: 'client',     name: 'Restaurant Le Chef',  redirect: 'client.html' }
-    // Ajoutez vos nouveaux clients ici après export (voir README)
-];
-// Mots de passe correspondants :
-// youssef → youssef123 | admin01 → simpact2026 | prod01 → atelier
-// compta01 → facture   | comm01 → vente
-// client01 → client123 | client02 → 1234
 
-// ─── HACHAGE ────────────────────────────────────────────────
+    // ── ÉQUIPE INTERNE ──────────────────────────────────────
+    { id: 'youssef',  pass: 'h_fmbfji',  role: 'superadmin', name: 'Youssef (PDG)',      redirect: 'hub.html'        },
+    { id: 'admin01',  pass: 'h_riha7v',  role: 'admin',      name: 'Admin Simpact',      redirect: 'admin.html'      },
+    { id: 'prod01',   pass: 'h_be518k',  role: 'production', name: 'Chef Atelier',       redirect: 'production.html' },
+    { id: 'compta01', pass: 'h_i22pok',  role: 'compta',     name: 'Service Compta',     redirect: 'compta.html'     },
+    { id: 'comm01',   pass: 'h_1uqk40',  role: 'commercial', name: 'Commercial 1',       redirect: 'commercial.html' },
+
+    // ── CLIENTS VIP ─────────────────────────────────────────
+    { id: 'client01', pass: 'h_vho8e1',  role: 'client',     name: 'Agence Pub Alpha',   redirect: 'client.html'     },
+    { id: 'client02', pass: 'h_wcoy',    role: 'client',     name: 'Restaurant Le Chef', redirect: 'client.html'     },
+    { id: 'uib',      pass: 'h_78v1kg',  role: 'client',     name: 'UIB BANK',           redirect: 'client.html'     }
+
+    // ← Ajoutez vos prochains clients ici, au-dessus de cette ligne
+];
+
+// ─────────────────────────────────────────────────────────────
+//  RAPPEL DES MOTS DE PASSE
+//  youssef   → youssef123
+//  admin01   → simpact2026
+//  prod01    → atelier
+//  compta01  → facture
+//  comm01    → vente
+//  client01  → client123
+//  client02  → 1234
+//  uib       → uib2026
+// ─────────────────────────────────────────────────────────────
+
+
+// ════════════════════════════════════════════════════════════
+//  NE MODIFIEZ RIEN EN DESSOUS DE CETTE LIGNE
+// ════════════════════════════════════════════════════════════
+
 function hashPass(password) {
     let hash = 0;
     for (let i = 0; i < password.length; i++) {
@@ -42,14 +58,12 @@ function hashPass(password) {
     return 'h_' + Math.abs(hash).toString(36);
 }
 
-// ─── UTILISATEURS : FUSION localStorage + DEFAULT ───────────
 function getUsers() {
     try {
         const stored = localStorage.getItem('SIMPACT_USERS');
         if (stored) {
             const localUsers = JSON.parse(stored);
             const merged = [...localUsers];
-            // Ajouter les DEFAULT_USERS manquants (filet de sécurité)
             DEFAULT_USERS.forEach(def => {
                 if (!merged.find(u => u.id === def.id)) merged.push(def);
             });
@@ -65,12 +79,10 @@ function saveUsers(users) {
     localStorage.setItem('SIMPACT_USERS', JSON.stringify(users));
 }
 
-// ─── EXPORT BASE COMPLÈTE (JSON téléchargeable) ─────────────
 function exportDatabase() {
     const backup = {
         version: '2.1',
         exportDate: new Date().toISOString(),
-        exportedBy: 'SIMPACT ERP',
         users: getUsers(),
         orders: getOrders(),
         quotes: getQuotes(),
@@ -87,7 +99,6 @@ function exportDatabase() {
     URL.revokeObjectURL(url);
 }
 
-// ─── IMPORT BASE (restauration) ─────────────────────────────
 function importDatabase(file, onSuccess) {
     const reader = new FileReader();
     reader.onload = function(e) {
@@ -106,7 +117,6 @@ function importDatabase(file, onSuccess) {
     reader.readAsText(file);
 }
 
-// ─── AUTH ────────────────────────────────────────────────────
 function login(userId, password) {
     if (!userId || !password) return null;
     const users = getUsers();
@@ -147,7 +157,6 @@ function logout() {
     window.location.href = 'index.html';
 }
 
-// ─── CRUD UTILISATEURS ───────────────────────────────────────
 function addOrUpdateUser(userData) {
     const users = getUsers();
     const idx = users.findIndex(u => u.id === userData.originalId || u.id === userData.id);
@@ -158,8 +167,10 @@ function addOrUpdateUser(userData) {
     const newUser = {
         id: userData.id,
         pass: userData.passChanged ? hashPass(userData.pass) : (idx !== -1 ? users[idx].pass : hashPass(userData.pass)),
-        role: userData.role, name: userData.name,
-        redirect: userData.redirect, email: userData.email || ''
+        role: userData.role,
+        name: userData.name,
+        redirect: userData.redirect,
+        email: userData.email || ''
     };
     if (idx !== -1) {
         if (users[idx].role === 'superadmin') newUser.id = users[idx].id;
@@ -179,7 +190,6 @@ function deleteUser(userId) {
     return true;
 }
 
-// ─── COMMANDES ───────────────────────────────────────────────
 function getOrders() {
     try { return JSON.parse(localStorage.getItem('SIMPACT_ORDERS')) || []; }
     catch(e) { return []; }
@@ -191,16 +201,16 @@ function saveOrder(orderData) {
     orders.unshift({ ...orderData, ts: orderData.ts || new Date().toISOString() });
     if (orders.length > 500) orders = orders.slice(0, 500);
     localStorage.setItem('SIMPACT_ORDERS', JSON.stringify(orders));
-    // Cloud optionnel
     if (CLOUD_API_URL && CLOUD_API_URL.startsWith('http')) {
         const fd = new FormData();
-        Object.entries({ Date: orderData.date, Ref: orderData.ref, Client: orderData.client,
-            ClientId: orderData.clientId||'', Produit: orderData.prod, Quantite: orderData.qty,
-            Prix_HT: orderData.price, TVA: orderData.tva||0, Prix_TTC: orderData.priceTTC||orderData.price,
+        Object.entries({
+            Date: orderData.date, Ref: orderData.ref, Client: orderData.client,
+            ClientId: orderData.clientId || '', Produit: orderData.prod, Quantite: orderData.qty,
+            Prix_HT: orderData.price, TVA: orderData.tva || 0, Prix_TTC: orderData.priceTTC || orderData.price,
             Details: orderData.desc, Commercial: orderData.user,
-            Statut_Prod: orderData.statusProd, Statut_Compta: orderData.statusCompta, Delai: orderData.delai||''
-        }).forEach(([k,v]) => fd.append(k, v));
-        fetch(CLOUD_API_URL, { method: 'POST', body: fd, mode: 'no-cors' }).catch(()=>{});
+            Statut_Prod: orderData.statusProd, Statut_Compta: orderData.statusCompta, Delai: orderData.delai || ''
+        }).forEach(([k, v]) => fd.append(k, v));
+        fetch(CLOUD_API_URL, { method: 'POST', body: fd, mode: 'no-cors' }).catch(() => {});
     }
 }
 
@@ -214,10 +224,11 @@ function updateOrderStatus(ref, newStatus, type) {
     }
 }
 
-// ─── DEVIS ───────────────────────────────────────────────────
 function getQuotes() {
-    try { return JSON.parse(localStorage.getItem('SIMPACT_QUOTES')) || []; } catch(e) { return []; }
+    try { return JSON.parse(localStorage.getItem('SIMPACT_QUOTES')) || []; }
+    catch(e) { return []; }
 }
+
 function saveQuote(quoteData) {
     let quotes = getQuotes();
     quotes = quotes.filter(q => q.ref !== quoteData.ref);
@@ -225,32 +236,49 @@ function saveQuote(quoteData) {
     if (quotes.length > 100) quotes = quotes.slice(0, 100);
     localStorage.setItem('SIMPACT_QUOTES', JSON.stringify(quotes));
 }
+
 function convertQuoteToOrder(quoteRef) {
     const quotes = getQuotes();
     const quote = quotes.find(q => q.ref === quoteRef);
     if (!quote) return null;
     const orderRef = 'CMD-' + Date.now().toString(36).toUpperCase();
     const now = new Date();
-    const order = { ...quote, ref: orderRef, quoteRef,
-        date: now.toLocaleDateString('fr-FR') + ' ' + now.toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'}),
-        statusProd: 'En attente', statusCompta: 'Non payé', type: 'order' };
+    const order = {
+        ...quote, ref: orderRef, quoteRef,
+        date: now.toLocaleDateString('fr-FR') + ' ' + now.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }),
+        statusProd: 'En attente', statusCompta: 'Non payé', type: 'order'
+    };
     saveOrder(order);
     const qIdx = quotes.findIndex(q => q.ref === quoteRef);
-    if (qIdx !== -1) { quotes[qIdx].status = 'Converti'; quotes[qIdx].orderRef = orderRef; localStorage.setItem('SIMPACT_QUOTES', JSON.stringify(quotes)); }
+    if (qIdx !== -1) {
+        quotes[qIdx].status = 'Converti';
+        quotes[qIdx].orderRef = orderRef;
+        localStorage.setItem('SIMPACT_QUOTES', JSON.stringify(quotes));
+    }
     return order;
 }
 
-// ─── STOCK ───────────────────────────────────────────────────
-function getStock() { try { return JSON.parse(localStorage.getItem('SIMPACT_STOCK')) || []; } catch(e) { return []; } }
-function saveStock(data) { localStorage.setItem('SIMPACT_STOCK', JSON.stringify(data)); }
-function getStockMovements() { try { return JSON.parse(localStorage.getItem('SIMPACT_STOCK_MOVEMENTS')) || []; } catch(e) { return []; } }
+function getStock() {
+    try { return JSON.parse(localStorage.getItem('SIMPACT_STOCK')) || []; }
+    catch(e) { return []; }
+}
+
+function saveStock(data) {
+    localStorage.setItem('SIMPACT_STOCK', JSON.stringify(data));
+}
+
+function getStockMovements() {
+    try { return JSON.parse(localStorage.getItem('SIMPACT_STOCK_MOVEMENTS')) || []; }
+    catch(e) { return []; }
+}
+
 function saveStockMovement(m) {
-    let moves = getStockMovements(); moves.unshift(m);
+    let moves = getStockMovements();
+    moves.unshift(m);
     if (moves.length > 500) moves = moves.slice(0, 500);
     localStorage.setItem('SIMPACT_STOCK_MOVEMENTS', JSON.stringify(moves));
 }
 
-// ─── LOGS ────────────────────────────────────────────────────
 function logActivity(userId, action, details) {
     try {
         let logs = JSON.parse(localStorage.getItem('SIMPACT_LOGS') || '[]');
@@ -260,13 +288,15 @@ function logActivity(userId, action, details) {
     } catch(e) {}
 }
 
-// ─── STATS CLIENT ────────────────────────────────────────────
-function getClientHistory(clientId) { return getOrders().filter(o => o.clientId === clientId || o.client === clientId); }
+function getClientHistory(clientId) {
+    return getOrders().filter(o => o.clientId === clientId || o.client === clientId);
+}
+
 function getClientStats(clientId) {
     const history = getClientHistory(clientId);
     const totalCA = history.reduce((s, o) => s + parseFloat(o.price || 0), 0);
     const products = {};
     history.forEach(o => { products[o.prod] = (products[o.prod] || 0) + 1; });
-    const topProduct = Object.keys(products).sort((a,b) => products[b]-products[a])[0] || '—';
+    const topProduct = Object.keys(products).sort((a, b) => products[b] - products[a])[0] || '—';
     return { count: history.length, totalCA, topProduct, lastOrder: history[0] };
 }
