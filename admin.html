@@ -3,450 +3,558 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SIMPACT — Administration</title>
-    <script src="users.js?v=2"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <title>Simpact - Admin Prix</title>
+    <script src="users.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-        :root {
-            --bg: #0a0a0f; --card: #111118; --card2: #16161f;
-            --text: #f1f0ed; --amber: #f0a500; --green: #10b981; --blue: #3b82f6;
-            --red: #ef4444; --border: #1e1e2a; --muted: #6b7280;
-            --input-bg: #1e1e2a;
-        }
-        body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
-        .topbar { background: var(--card); border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 2rem; position: sticky; top: 0; z-index: 100; }
-        .topbar-brand { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.1rem; display: flex; align-items: center; gap: 10px; }
-        .topbar-brand span { background: var(--red); color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; }
-        .topbar-right { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-        .btn-nav { padding: 6px 14px; border: 1px solid var(--border); border-radius: 6px; background: transparent; color: #94a3b8; font-family: 'DM Sans', sans-serif; font-size: 0.82rem; cursor: pointer; transition: 0.2s; }
-        .btn-nav:hover { color: white; border-color: rgba(255,255,255,0.3); }
-        .btn-nav.green { background: var(--green); color: #0a0a0f; border-color: var(--green); font-weight: 700; }
-        .btn-nav.red { background: var(--red); color: white; border-color: var(--red); }
-        .btn-nav.blue { background: var(--blue); color: white; border-color: var(--blue); }
-        .btn-nav.amber { background: var(--amber); color: #0a0a0f; border-color: var(--amber); font-weight: 700; }
-
-        .page { max-width: 1400px; margin: 0 auto; padding: 2rem; }
+        :root { --bg: #0f172a; --card-bg: #1e293b; --text: #f1f5f9; --accent: #f59e0b; --success: #10b981; --danger: #ef4444; --input-bg: #334155; }
+        body { font-family: 'Outfit', sans-serif; background: var(--bg); color: var(--text); padding: 2rem; margin: 0; }
+        .container { max-width: 1400px; margin: 0 auto; }
+        
+        /* HEADER */
+        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; border-bottom: 1px solid #334155; padding-bottom: 1rem; }
+        .btn-group { display: flex; gap: 10px; }
+        .btn { padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; font-family: inherit; transition: 0.2s; color: white; }
+        .btn:hover { transform: translateY(-2px); opacity: 0.9; }
+        .btn-save { background: var(--success); }
+        .btn-reset { background: var(--danger); }
+        .btn-logout { background: #334155; }
 
         /* TABS */
-        .tabs { display: flex; gap: 4px; margin-bottom: 1.5rem; overflow-x: auto; padding-bottom: 2px; }
-        .tab-btn { padding: 0.6rem 1.25rem; border: 1px solid var(--border); border-radius: 8px; background: transparent; cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 0.85rem; color: var(--muted); transition: 0.2s; white-space: nowrap; }
-        .tab-btn.active { background: var(--amber); color: #0a0a0f; border-color: var(--amber); font-weight: 700; }
-        .tab-content { display: none; animation: fadeIn 0.2s ease; }
+        .tabs { display: flex; gap: 10px; margin-bottom: 20px; overflow-x: auto; padding-bottom: 5px; }
+        .tab-btn { background: var(--card-bg); color: #94a3b8; padding: 10px 20px; border: 1px solid #334155; border-radius: 8px; cursor: pointer; white-space: nowrap; transition: 0.3s; }
+        .tab-btn.active { background: var(--accent); color: white; border-color: var(--accent); }
+        
+        .tab-content { display: none; animation: fadeIn 0.3s ease; }
         .tab-content.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* CARDS */
-        .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem; }
-        .card-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.9rem; color: var(--amber); margin-bottom: 1.25rem; }
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
-
-        /* TABLE */
+        /* CARDS & TABLES */
+        .card { background: var(--card-bg); border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem; border: 1px solid #334155; }
+        h2 { margin-top: 0; color: var(--accent); font-size: 1.2rem; margin-bottom: 1rem; }
+        
         table { width: 100%; border-collapse: collapse; }
-        th { text-align: left; padding: 0.6rem 0.75rem; font-size: 0.75rem; color: var(--muted); border-bottom: 1px solid var(--border); text-transform: uppercase; letter-spacing: 0.5px; }
-        td { padding: 0.6rem 0.75rem; border-bottom: 1px solid var(--border); }
-        tr:last-child td { border-bottom: none; }
-        input[type="number"] { background: var(--input-bg); border: 1px solid var(--border); color: var(--text); padding: 6px 8px; border-radius: 5px; width: 100%; font-family: 'DM Mono', monospace; font-size: 0.88rem; outline: none; }
-        input[type="number"]:focus { border-color: var(--amber); }
-        .btn-delete { background: transparent; border: none; color: var(--muted); cursor: pointer; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; transition: 0.2s; }
-        .btn-delete:hover { color: var(--red); background: rgba(239,68,68,0.1); }
-        .btn-add-row { width: 100%; background: transparent; border: 1px dashed var(--border); color: var(--muted); padding: 8px; border-radius: 6px; cursor: pointer; margin-top: 8px; font-size: 0.82rem; transition: 0.2s; }
-        .btn-add-row:hover { border-color: var(--amber); color: var(--amber); }
-        .simple-input-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-        .field-group { margin-bottom: 1rem; }
-        .field-group label { display: block; font-size: 0.75rem; color: var(--muted); margin-bottom: 0.4rem; text-transform: uppercase; letter-spacing: 0.5px; }
-        .field-group input, .field-group select { background: var(--input-bg); border: 1px solid var(--border); color: var(--text); padding: 8px 10px; border-radius: 6px; width: 100%; font-family: inherit; font-size: 0.9rem; outline: none; }
-        .field-group input:focus, .field-group select:focus { border-color: var(--amber); }
+        th { text-align: left; color: #94a3b8; padding: 10px; border-bottom: 1px solid #334155; font-size: 0.9rem; }
+        td { padding: 10px; border-bottom: 1px solid #334155; }
+        
+        input { background: var(--input-bg); border: 1px solid #475569; color: white; padding: 8px; border-radius: 4px; width: 100%; box-sizing: border-box; font-family: monospace; }
+        input:focus { outline: none; border-color: var(--accent); }
+        
+        .delete-btn { background: rgba(239, 68, 68, 0.2); color: var(--danger); border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; }
+        .delete-btn:hover { background: var(--danger); color: white; }
+        
+        .add-row-btn { background: #334155; color: white; width: 100%; padding: 10px; margin-top: 10px; border: 1px dashed #475569; border-radius: 6px; cursor: pointer; }
+        .add-row-btn:hover { background: #475569; }
 
-        /* USER TABLE */
-        .users-table { width: 100%; border-collapse: collapse; }
-        .users-table th { text-align: left; padding: 0.75rem 1rem; font-size: 0.75rem; color: var(--muted); background: var(--card2); border-bottom: 1px solid var(--border); text-transform: uppercase; letter-spacing: 0.5px; }
-        .users-table td { padding: 0.9rem 1rem; border-bottom: 1px solid var(--border); font-size: 0.88rem; }
-        .role-badge { display: inline-block; padding: 3px 10px; border-radius: 10px; font-size: 0.75rem; font-weight: 700; }
-        .role-superadmin { background: rgba(239,68,68,0.15); color: var(--red); }
-        .role-admin { background: rgba(240,165,0,0.15); color: var(--amber); }
-        .role-production { background: rgba(59,130,246,0.15); color: var(--blue); }
-        .role-commercial { background: rgba(139,92,246,0.15); color: #a78bfa; }
-        .role-compta { background: rgba(16,185,129,0.15); color: var(--green); }
-        .role-client { background: rgba(148,163,184,0.15); color: #94a3b8; }
-        .btn-edit-u { background: rgba(59,130,246,0.15); color: var(--blue); border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; font-size: 0.8rem; margin-right: 4px; }
-        .btn-del-u { background: rgba(239,68,68,0.1); color: var(--red); border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; font-size: 0.8rem; }
-        .btn-del-u:hover { background: var(--red); color: white; }
-
-        /* USER FORM */
-        .user-form-wrap { background: var(--card2); border: 1px solid var(--border); border-radius: 10px; padding: 1.5rem; margin-top: 1rem; }
-        .user-form-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.9rem; color: var(--amber); margin-bottom: 1.25rem; }
-        .form-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; }
-        .full-col { grid-column: 1 / -1; display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-        .btn-save-user { background: var(--green); color: #0a0a0f; border: none; padding: 10px 24px; border-radius: 7px; font-weight: 700; font-family: 'Syne', sans-serif; cursor: pointer; margin-right: 8px; }
-        .btn-reset-form { background: transparent; border: 1px solid var(--border); color: var(--muted); padding: 10px 20px; border-radius: 7px; cursor: pointer; font-size: 0.85rem; }
-
-        /* DANGER */
-        .danger-zone { border: 1px solid rgba(239,68,68,0.3); border-radius: 12px; padding: 1.5rem; background: rgba(239,68,68,0.04); }
-        .danger-title { color: var(--red); font-family: 'Syne', sans-serif; font-weight: 700; margin-bottom: 1rem; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        label { display: block; margin-bottom: 5px; font-size: 0.9rem; color: #94a3b8; }
+        
+        /* MODAL GESTION UTILISATEURS */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 9999; justify-content: center; align-items: center; padding: 20px; }
+        .modal-content { background: var(--card-bg); padding: 2rem; border-radius: 16px; max-width: 900px; width: 100%; max-height: 90vh; overflow-y: auto; border: 2px solid #475569; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 2px solid #475569; }
+        .modal-title { font-size: 1.5rem; color: var(--accent); margin: 0; }
+        .close-btn { background: none; border: none; color: #94a3b8; font-size: 2rem; cursor: pointer; line-height: 1; }
+        .close-btn:hover { color: white; }
+        .users-table { width: 100%; border-collapse: collapse; margin-bottom: 1rem; }
+        .users-table th { background: #0f172a; padding: 12px; text-align: left; color: #94a3b8; border-bottom: 2px solid #475569; }
+        .users-table td { padding: 12px; border-bottom: 1px solid #475569; }
+        .role-badge { padding: 4px 10px; border-radius: 12px; font-size: 0.8rem; font-weight: 600; }
+        .role-superadmin { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
+        .role-admin { background: rgba(245, 158, 11, 0.2); color: #f59e0b; }
+        .role-production { background: rgba(59, 130, 246, 0.2); color: #3b82f6; }
+        .role-commercial { background: rgba(139, 92, 246, 0.2); color: #8b5cf6; }
+        .role-compta { background: rgba(16, 185, 129, 0.2); color: #10b981; }
+        .role-client { background: rgba(148, 163, 184, 0.2); color: #94a3b8; }
+        .action-btns { display: flex; gap: 5px; }
+        .btn-edit-user { background: #3b82f6; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 0.85rem; }
+        .btn-delete-user { background: rgba(239, 68, 68, 0.2); color: #ef4444; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 0.85rem; }
+        .btn-delete-user:hover { background: #ef4444; color: white; }
+        .user-form { background: #0f172a; padding: 1.5rem; border-radius: 8px; margin-top: 1rem; }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        .form-group-full { grid-column: 1/-1; }
+        .form-group label { color: #cbd5e1; font-weight: 600; }
+        .form-group input, .form-group select { width: 100%; padding: 10px; background: var(--input-bg); border: 1px solid #475569; color: white; border-radius: 6px; }
+        .form-group input:focus, .form-group select:focus { outline: none; border-color: var(--accent); }
     </style>
 </head>
 <body>
-<script>checkAuth('admin');</script>
+    <script>checkAuth('admin');</script>
 
-<div class="topbar">
-    <div class="topbar-brand">SIMPACT <span>ADMIN</span></div>
-    <div class="topbar-right">
-        <button class="btn-nav" onclick="history.back()">← Retour</button>
-        <button class="btn-nav" onclick="window.location.href='stock.html'">📦 Stock</button>
-        <button class="btn-nav" onclick="window.location.href='clients.html'">👥 Clients</button>
-        <button class="btn-nav blue" onclick="window.location.href='dashboard.html'">📊 Dashboard</button>
-        <button class="btn-nav red" onclick="resetOrders()">🗑️ Vider commandes</button>
-        <button class="btn-nav amber" onclick="saveAllPrices()">💾 Sauvegarder</button>
-        <button class="btn-nav" onclick="logout()">Quitter</button>
-    </div>
-</div>
+    <div class="container">
+        <header>
+            <h1>🎛️ Admin Prix</h1>
+            <div class="btn-group">
+                <button class="btn" onclick="window.location.href='stock.html'" style="background: #8b5cf6;">📦 Gestion Stock</button>
+                <button class="btn" onclick="openUsersModal()" style="background: #3b82f6;">👥 Gestion Utilisateurs</button>
+                <button class="btn btn-reset" onclick="resetOrders()">🗑️ Vider Commandes</button>
+                <button class="btn btn-save" onclick="saveAllPrices()">💾 SAUVEGARDER CONFIG</button>
+                <button class="btn btn-logout" onclick="logout()">Quitter</button>
+            </div>
+        </header>
 
-<div class="page">
-    <div class="tabs">
-        <button class="tab-btn active" onclick="switchTab('t-flyers', this)">Flyers</button>
-        <button class="tab-btn" onclick="switchTab('t-cartes', this)">Cartes</button>
-        <button class="tab-btn" onclick="switchTab('t-affiches', this)">Affiches</button>
-        <button class="tab-btn" onclick="switchTab('t-depliants', this)">Dépliants</button>
-        <button class="tab-btn" onclick="switchTab('t-entetes', this)">En-têtes</button>
-        <button class="tab-btn" onclick="switchTab('t-livres', this)">Livres</button>
-        <button class="tab-btn" onclick="switchTab('t-brochures', this)">Brochures</button>
-        <button class="tab-btn" onclick="switchTab('t-fixes', this)">Paramètres</button>
-        <button class="tab-btn" onclick="switchTab('t-users', this)">👥 Utilisateurs</button>
-    </div>
-
-    <!-- FLYERS -->
-    <div id="t-flyers" class="tab-content active">
-        <div class="grid-2">
-            <div class="card"><div class="card-title">Flyers Recto</div><table id="flyer-recto-table"><thead><tr><th>Quantité max</th><th>Prix (DT)</th><th></th></tr></thead><tbody></tbody></table><button class="btn-add-row" onclick="addRow('flyer-recto')">+ Ajouter palier</button></div>
-            <div class="card"><div class="card-title">Flyers Recto/Verso</div><table id="flyer-rectoverso-table"><thead><tr><th>Quantité max</th><th>Prix (DT)</th><th></th></tr></thead><tbody></tbody></table><button class="btn-add-row" onclick="addRow('flyer-rectoverso')">+ Ajouter palier</button></div>
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('flyers')">Flyers</button>
+            <button class="tab-btn" onclick="switchTab('cartes')">Cartes</button>
+            <button class="tab-btn" onclick="switchTab('affiches')">🖼️ Affiches</button>
+            <button class="tab-btn" onclick="switchTab('depliants')">Dépliants</button>
+            <button class="tab-btn" onclick="switchTab('entetes')">En-têtes</button>
+            <button class="tab-btn" onclick="switchTab('livres')">Livres</button>
+            <button class="tab-btn" onclick="switchTab('brochures')">Brochures</button>
+            <button class="tab-btn" onclick="switchTab('fixes')">Paramètres</button>
         </div>
-    </div>
 
-    <!-- CARTES -->
-    <div id="t-cartes" class="tab-content">
-        <div class="grid-2">
-            <div class="card"><div class="card-title">Cartes Standard</div><table id="carte-recto-table"><thead><tr><th>Quantité max</th><th>Prix (DT)</th><th></th></tr></thead><tbody></tbody></table><button class="btn-add-row" onclick="addRow('carte-recto')">+ Ajouter palier</button></div>
-            <div class="card"><div class="card-title">Cartes Pelliculées</div><table id="carte-pellicule-table"><thead><tr><th>Quantité max</th><th>Prix (DT)</th><th></th></tr></thead><tbody></tbody></table><button class="btn-add-row" onclick="addRow('carte-pellicule')">+ Ajouter palier</button></div>
+        <div id="flyers" class="tab-content active">
+            <div class="grid-2">
+                <div class="card"><h2>Flyers Recto</h2><table id="flyer-recto-table"><thead><tr><th>Qté Max</th><th>Prix (DT)</th><th></th></tr></thead><tbody></tbody></table><button class="add-row-btn" onclick="addRow('flyer-recto')">+ Ajouter palier</button></div>
+                <div class="card"><h2>Flyers R/V</h2><table id="flyer-rectoverso-table"><thead><tr><th>Qté Max</th><th>Prix (DT)</th><th></th></tr></thead><tbody></tbody></table><button class="add-row-btn" onclick="addRow('flyer-rectoverso')">+ Ajouter palier</button></div>
+            </div>
         </div>
-    </div>
 
-    <!-- AFFICHES -->
-    <div id="t-affiches" class="tab-content">
-        <div class="card"><div class="card-title">Affiches Grand Format (base A3 — A3+ × 1.2 automatiquement)</div><table id="affiche-table"><thead><tr><th>Quantité max</th><th>Prix unitaire A3 (DT)</th><th></th></tr></thead><tbody></tbody></table><button class="btn-add-row" onclick="addRow('affiche')">+ Ajouter palier</button></div>
-    </div>
+        <div id="cartes" class="tab-content">
+            <div class="grid-2">
+                <div class="card"><h2>Cartes Standard</h2><table id="carte-recto-table"><thead><tr><th>Qté Max</th><th>Prix (DT)</th><th></th></tr></thead><tbody></tbody></table><button class="add-row-btn" onclick="addRow('carte-recto')">+ Ajouter palier</button></div>
+                <div class="card"><h2>Cartes Pelliculées</h2><table id="carte-pellicule-table"><thead><tr><th>Qté Max</th><th>Prix (DT)</th><th></th></tr></thead><tbody></tbody></table><button class="add-row-btn" onclick="addRow('carte-pellicule')">+ Ajouter palier</button></div>
+            </div>
+        </div>
 
-    <!-- DÉPLIANTS -->
-    <div id="t-depliants" class="tab-content">
-        <div class="card"><div class="card-title">Dépliants 3 Volets</div><table id="depliant-table"><thead><tr><th>Quantité max</th><th>Prix (DT)</th><th></th></tr></thead><tbody></tbody></table><button class="btn-add-row" onclick="addRow('depliant')">+ Ajouter palier</button></div>
-    </div>
+        <div id="affiches" class="tab-content">
+            <div class="card">
+                <h2>Affiches Grand Format (Base A3)</h2>
+                <p style="color:#64748b; font-size:0.9rem; margin-bottom:15px;">Le format A3+ sera calculé automatiquement (Prix A3 x 1.2)</p>
+                <table id="affiche-table"><thead><tr><th>Qté Max</th><th>Prix Unitaire A3 (DT)</th><th></th></tr></thead><tbody></tbody></table>
+                <button class="add-row-btn" onclick="addRow('affiche')">+ Ajouter palier</button>
+            </div>
+        </div>
 
-    <!-- EN-TÊTES -->
-    <div id="t-entetes" class="tab-content">
-        <div class="card"><div class="card-title">Papier En-tête</div><table id="entete-table"><thead><tr><th>Quantité max</th><th>Prix (DT)</th><th></th></tr></thead><tbody></tbody></table><button class="btn-add-row" onclick="addRow('entete')">+ Ajouter palier</button></div>
-    </div>
+        <div id="depliants" class="tab-content">
+            <div class="card"><h2>Dépliants 3 Volets</h2><table id="depliant-table"><thead><tr><th>Qté Max</th><th>Prix (DT)</th><th></th></tr></thead><tbody></tbody></table><button class="add-row-btn" onclick="addRow('depliant')">+ Ajouter palier</button></div>
+        </div>
 
-    <!-- LIVRES -->
-    <div id="t-livres" class="tab-content">
-        <div class="card"><div class="card-title">Prix couvertures livres</div>
-            <div class="simple-input-row">
-                <div class="field-group"><label>A4 Recto</label><input type="number" id="livre-a4-recto" step="0.01"></div>
-                <div class="field-group"><label>A4 Recto/Verso</label><input type="number" id="livre-a4-rectoverso" step="0.01"></div>
-                <div class="field-group"><label>A5 Recto</label><input type="number" id="livre-a5-recto" step="0.01"></div>
-                <div class="field-group"><label>A5 Recto/Verso</label><input type="number" id="livre-a5-rectoverso" step="0.01"></div>
+        <div id="entetes" class="tab-content">
+            <div class="card"><h2>Papier En-tête</h2><table id="entete-table"><thead><tr><th>Qté Max</th><th>Prix (DT)</th><th></th></tr></thead><tbody></tbody></table><button class="add-row-btn" onclick="addRow('entete')">+ Ajouter palier</button></div>
+        </div>
+        
+        <div id="livres" class="tab-content">
+            <div class="card">
+                <h2>Prix Couvertures Livres</h2>
+                <div class="grid-2">
+                    <div><label>A4 Recto</label><input type="number" id="livre-a4-recto" step="0.01"></div>
+                    <div><label>A4 R/V</label><input type="number" id="livre-a4-rectoverso" step="0.01"></div>
+                    <div><label>A5 Recto</label><input type="number" id="livre-a5-recto" step="0.01"></div>
+                    <div><label>A5 R/V</label><input type="number" id="livre-a5-rectoverso" step="0.01"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="brochures" class="tab-content">
+            <div class="card"><h2>Paliers Brochures (Prix par page)</h2><table id="brochure-paliers-table"><thead><tr><th>Min</th><th>Max</th><th>Prix/feuille</th><th></th></tr></thead><tbody></tbody></table><button class="add-row-btn" onclick="addRow('brochure-paliers')">+ Ajouter palier</button></div>
+        </div>
+
+        <div id="fixes" class="tab-content">
+            <div class="card">
+                <h2>Coûts Matières & Fixes</h2>
+                <div class="grid-2">
+                    <div><label>Coût Pelliculage (par unité)</label><input type="number" id="prix-pelliculage" step="0.01"></div>
+                    <div><label>Coût Feuille N&B (Livre)</label><input type="number" id="prix-feuille-nb" step="0.01"></div>
+                    <div><label>Supplément Offset 100g</label><input type="number" id="prix-offset-100" step="0.001"></div>
+                    <div><label>Coût par gramme papier couché</label><input type="number" id="prix-gramme-couche" step="0.0001"></div>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- BROCHURES -->
-    <div id="t-brochures" class="tab-content">
-        <div class="card"><div class="card-title">Paliers brochures (prix par feuille)</div><table id="brochure-paliers-table"><thead><tr><th>Min</th><th>Max</th><th>Prix/feuille</th><th></th></tr></thead><tbody></tbody></table><button class="btn-add-row" onclick="addRow('brochure-paliers')">+ Ajouter palier</button></div>
-    </div>
-
-    <!-- PARAMÈTRES -->
-    <div id="t-fixes" class="tab-content">
-        <div class="card">
-            <div class="card-title">Coûts matières & paramètres globaux</div>
-            <div class="simple-input-row">
-                <div class="field-group"><label>Coût pelliculage (par unité)</label><input type="number" id="prix-pelliculage" step="0.01"></div>
-                <div class="field-group"><label>Coût feuille N&B (livre)</label><input type="number" id="prix-feuille-nb" step="0.01"></div>
-                <div class="field-group"><label>Supplément offset 100g (par feuille)</label><input type="number" id="prix-offset-100" step="0.001"></div>
-                <div class="field-group"><label>Coût par gramme papier couché</label><input type="number" id="prix-gramme-couche" step="0.0001"></div>
-                <div class="field-group"><label>Taux TVA (%)</label><input type="number" id="prix-tva" step="0.01"></div>
+    <!-- MODAL GESTION UTILISATEURS -->
+    <div id="modal-users" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">👥 Gestion des Utilisateurs</h2>
+                <button class="close-btn" onclick="closeUsersModal()">&times;</button>
             </div>
-        </div>
-        <!-- SECTION SAUVEGARDE -->
-        <div style="border:1px solid rgba(34,197,94,0.3); border-radius:12px; padding:1.5rem; background:rgba(34,197,94,0.04); margin-bottom:1.5rem;">
-            <div style="color:#22c55e; font-family:'Syne',sans-serif; font-weight:700; margin-bottom:0.5rem; font-size:1rem;">💾 Sauvegarde de la base de données</div>
-            <p style="color:var(--muted); font-size:0.85rem; margin-bottom:1rem; line-height:1.5;">
-                Exportez votre base (utilisateurs, commandes, devis) en fichier JSON.<br>
-                Sauvegardez-le sur votre Google Drive ou clé USB.<br>
-                <strong style="color:var(--fg);">Importez-le</strong> sur n'importe quel PC ou navigateur pour tout retrouver.
-            </p>
-            <button class="btn-nav" onclick="exportDatabase()" style="border-color:#22c55e; color:#22c55e; margin-right:8px;">
-                💾 Exporter la base complète
-            </button>
-            <label class="btn-nav" style="border-color:rgba(99,102,241,0.6); color:#818cf8; cursor:pointer; display:inline-block;">
-                📂 Importer un backup
-                <input type="file" accept=".json" style="display:none;" onchange="importDatabase(this.files[0], ()=>{ renderUsersTable(); alert('Rechargez la page pour voir tous les changements.'); })">
-            </label>
-        </div>
-
-        <div class="danger-zone">
-            <div class="danger-title">⚠️ Zone danger</div>
-            <button class="btn-nav red" onclick="resetOrders()" style="margin-right:8px;">🗑️ Vider toutes les commandes</button>
-            <button class="btn-nav" onclick="resetConfig()" style="border-color:rgba(239,68,68,0.4);color:var(--red);">🔄 Réinitialiser les prix</button>
-        </div>
-    </div>
-
-    <!-- UTILISATEURS -->
-    <div id="t-users" class="tab-content">
-        <div class="card">
-            <div class="card-title">Liste des utilisateurs</div>
-            <div style="overflow-x:auto;">
+            
+            <div style="overflow-x: auto;">
                 <table class="users-table">
-                    <thead><tr><th>Identifiant</th><th>Nom</th><th>Rôle</th><th>Page défaut</th><th>Actions</th></tr></thead>
-                    <tbody id="users-tbody"></tbody>
+                    <thead>
+                        <tr>
+                            <th>Identifiant</th>
+                            <th>Nom</th>
+                            <th>Rôle</th>
+                            <th>Page par défaut</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="users-table-body"></tbody>
                 </table>
             </div>
 
-            <div class="user-form-wrap">
-                <div class="user-form-title" id="form-title">➕ Ajouter un utilisateur</div>
-                <form onsubmit="saveUserForm(event)">
+            <div class="user-form">
+                <h3 style="color: var(--accent); margin-top: 0;">➕ Ajouter / Modifier un Utilisateur</h3>
+                <form id="user-form" onsubmit="saveUserForm(event)">
                     <input type="hidden" id="user-original-id">
-                    <div class="form-grid-3">
-                        <div class="field-group"><label>Identifiant *</label><input type="text" id="u-id" placeholder="ex: comm02" required></div>
-                        <div class="field-group"><label>Mot de passe *</label><input type="text" id="u-pass" placeholder="ex: motdepasse" required></div>
-                        <div class="field-group"><label>Nom d'affichage *</label><input type="text" id="u-name" placeholder="ex: Commercial 2" required></div>
-                    </div>
-                    <div class="full-col">
-                        <div class="field-group"><label>Rôle *</label>
-                            <select id="u-role" required>
-                                <option value="">— Sélectionner —</option>
-                                <option value="superadmin">🔴 Super Admin</option>
-                                <option value="admin">🟠 Admin</option>
-                                <option value="production">🔵 Production</option>
-                                <option value="commercial">🟣 Commercial</option>
-                                <option value="compta">🟢 Comptabilité</option>
-                                <option value="client">⚪ Client</option>
+                    
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Identifiant de connexion *</label>
+                            <input type="text" id="user-id" placeholder="Ex: comm02" required>
+                            <small style="color: #64748b; font-size: 0.85rem;">Utilisé pour se connecter</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label id="pass-label">Mot de passe *</label>
+                            <input type="text" id="user-pass" placeholder="Ex: motdepasse123">
+                            <small id="pass-hint" style="color: #64748b; font-size: 0.85rem;">Visible pour l'admin</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Nom d'affichage *</label>
+                            <input type="text" id="user-name" placeholder="Ex: Commercial 2" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Rôle *</label>
+                            <select id="user-role" required>
+                                <option value="">-- Sélectionner --</option>
+                                <option value="superadmin">🔴 Super Admin (accès total)</option>
+                                <option value="admin">🟠 Admin (prix, stock, utilisateurs)</option>
+                                <option value="production">🔵 Production (atelier, stock)</option>
+                                <option value="commercial">🟣 Commercial (commandes)</option>
+                                <option value="compta">🟢 Comptabilité (finances)</option>
+                                <option value="client">⚪ Client (commandes uniquement)</option>
                             </select>
                         </div>
-                        <div class="field-group"><label>Page de redirection *</label>
-                            <select id="u-redirect" required>
-                                <option value="admin.html">Administration</option>
-                                <option value="stock.html">Stock</option>
-                                <option value="production.html">Production (Atelier)</option>
-                                <option value="commercial.html">Commercial</option>
+
+                        <div class="form-group form-group-full">
+                            <label>Page de redirection *</label>
+                            <select id="user-redirect" required>
+                                <option value="admin.html">Admin (prix, config)</option>
+                                <option value="stock.html">Stock (gestion papier)</option>
+                                <option value="production.html">Production (atelier)</option>
+                                <option value="commercial.html">Commercial (commandes)</option>
                                 <option value="compta.html">Comptabilité</option>
-                                <option value="clients.html">Gestion Clients</option>
-                                <option value="client.html">Espace Client</option>
+                                <option value="client.html">Client</option>
                             </select>
+                            <small style="color: #64748b; font-size: 0.85rem;">Page affichée après connexion</small>
                         </div>
                     </div>
-                    <div>
-                        <button type="submit" class="btn-save-user">💾 Enregistrer</button>
-                        <button type="button" class="btn-reset-form" onclick="resetUserForm()">🔄 Réinitialiser</button>
+
+                    <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+                        <button type="submit" class="btn btn-save" style="flex: 1;">💾 Enregistrer l'utilisateur</button>
+                        <button type="button" class="btn btn-logout" onclick="resetUserForm()">🔄 Réinitialiser</button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
-</div>
 
-<script>
-    let prixData = {};
+    <script>
+        let prixData = {};
 
-    async function loadPrices() {
-        try {
-            const r = await fetch('prix_config.json');
-            prixData = await r.json();
-        } catch(e) {
-            prixData = { tarifs: { flyer: { recto: [], rectoVerso: [] }, carte: { recto: [], pellicule: [] }, depliant: [], entete: [], affiche: [] }, prix_couverture_livre: { a4: { recto: 1.3, rectoVerso: 1.5 }, a5: { recto: 0.65, rectoVerso: 0.75 } }, prix_fixes: { pelliculage: 0.1, feuille_nb: 0.2, offset_100: 0.014, gramme_couche: 0.0007 }, paliers_brochure: { couleur_recto_verso: [] }, tva_rate: 0.19 };
+        // INITIALISATION
+        async function loadPrices() {
+            try {
+                // Essayer de charger la config, sinon utiliser une base vide
+                const r = await fetch('prix_config.json');
+                prixData = await r.json();
+            } catch (e) {
+                console.log("Config non trouvée, création base vide.");
+                prixData = { tarifs: { flyer: {}, carte: {}, depliant: [], entete: [], affiche: [] }, prix_couverture_livre: {}, prix_fixes: {}, paliers_brochure: {} };
+            }
+            
+            // Remplissage des tableaux
+            fillTable('flyer-recto', prixData.tarifs.flyer.recto);
+            fillTable('flyer-rectoverso', prixData.tarifs.flyer.rectoVerso);
+            fillTable('carte-recto', prixData.tarifs.carte.recto);
+            fillTable('carte-pellicule', prixData.tarifs.carte.pellicule);
+            fillTable('depliant', prixData.tarifs.depliant);
+            fillTable('entete', prixData.tarifs.entete);
+            
+            // Gestion spécifique Affiches (Si pas de données, on initie un tableau vide)
+            fillTable('affiche', prixData.tarifs.affiche || []);
+
+            fillBrochureTable(prixData.paliers_brochure.couleur_recto_verso);
+
+            // Inputs simples
+            setVal('livre-a4-recto', prixData.prix_couverture_livre.a4?.recto);
+            setVal('livre-a4-rectoverso', prixData.prix_couverture_livre.a4?.rectoVerso);
+            setVal('livre-a5-recto', prixData.prix_couverture_livre.a5?.recto);
+            setVal('livre-a5-rectoverso', prixData.prix_couverture_livre.a5?.rectoVerso);
+
+            setVal('prix-pelliculage', prixData.prix_fixes.pelliculage);
+            setVal('prix-feuille-nb', prixData.prix_fixes.feuille_nb);
+            setVal('prix-offset-100', prixData.prix_fixes.offset_100);
+            setVal('prix-gramme-couche', prixData.prix_fixes.gramme_couche);
         }
-        fillTable('flyer-recto', prixData.tarifs.flyer.recto);
-        fillTable('flyer-rectoverso', prixData.tarifs.flyer.rectoVerso);
-        fillTable('carte-recto', prixData.tarifs.carte.recto);
-        fillTable('carte-pellicule', prixData.tarifs.carte.pellicule);
-        fillTable('depliant', prixData.tarifs.depliant);
-        fillTable('entete', prixData.tarifs.entete);
-        fillTable('affiche', prixData.tarifs.affiche || []);
-        fillBrochureTable(prixData.paliers_brochure.couleur_recto_verso);
-        setV('livre-a4-recto', prixData.prix_couverture_livre.a4?.recto);
-        setV('livre-a4-rectoverso', prixData.prix_couverture_livre.a4?.rectoVerso);
-        setV('livre-a5-recto', prixData.prix_couverture_livre.a5?.recto);
-        setV('livre-a5-rectoverso', prixData.prix_couverture_livre.a5?.rectoVerso);
-        setV('prix-pelliculage', prixData.prix_fixes.pelliculage);
-        setV('prix-feuille-nb', prixData.prix_fixes.feuille_nb);
-        setV('prix-offset-100', prixData.prix_fixes.offset_100);
-        setV('prix-gramme-couche', prixData.prix_fixes.gramme_couche);
-        setV('prix-tva', ((prixData.tva_rate || 0.19) * 100).toFixed(0));
-    }
 
-    function setV(id, v) { const el = document.getElementById(id); if (el && v !== undefined) el.value = v; }
-
-    function switchTab(id, btn) {
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-        btn.classList.add('active');
-        document.getElementById(id).classList.add('active');
-        if (id === 't-users') renderUsersTable();
-    }
-
-    function fillTable(id, data) {
-        const tbody = document.querySelector(`#${id}-table tbody`);
-        if (!tbody || !data) return;
-        tbody.innerHTML = '';
-        data.forEach((row, i) => {
-            tbody.innerHTML += `<tr>
-                <td><input type="number" value="${row.qty}" onchange="updateRow('${id}',${i},'qty',this.value)"></td>
-                <td><input type="number" value="${row.price}" step="0.01" onchange="updateRow('${id}',${i},'price',this.value)"></td>
-                <td><button class="btn-delete" onclick="deleteRow('${id}',${i})">✕</button></td>
-            </tr>`;
-        });
-    }
-
-    function fillBrochureTable(data) {
-        const tbody = document.querySelector('#brochure-paliers-table tbody');
-        if (!tbody || !data) return;
-        tbody.innerHTML = '';
-        data.forEach((row, i) => {
-            tbody.innerHTML += `<tr>
-                <td><input type="number" value="${row.min}" onchange="updateBrochureRow(${i},'min',this.value)"></td>
-                <td><input type="number" value="${row.max}" onchange="updateBrochureRow(${i},'max',this.value)"></td>
-                <td><input type="number" value="${row.price}" step="0.01" onchange="updateBrochureRow(${i},'price',this.value)"></td>
-                <td><button class="btn-delete" onclick="deleteBrochureRow(${i})">✕</button></td>
-            </tr>`;
-        });
-    }
-
-    function getTableData(id) {
-        const rows = document.querySelectorAll(`#${id}-table tbody tr`);
-        return Array.from(rows).map(r => {
-            const inputs = r.querySelectorAll('input');
-            return { qty: parseFloat(inputs[0]?.value), price: parseFloat(inputs[1]?.value) };
-        }).filter(r => !isNaN(r.qty) && !isNaN(r.price));
-    }
-
-    function updateRow(id, idx, field, val) {
-        const data = getTableDataRef(id);
-        if (data && data[idx]) data[idx][field] = parseFloat(val);
-    }
-    function getTableDataRef(id) {
-        const map = { 'flyer-recto': prixData.tarifs.flyer.recto, 'flyer-rectoverso': prixData.tarifs.flyer.rectoVerso, 'carte-recto': prixData.tarifs.carte.recto, 'carte-pellicule': prixData.tarifs.carte.pellicule, 'depliant': prixData.tarifs.depliant, 'entete': prixData.tarifs.entete, 'affiche': prixData.tarifs.affiche };
-        return map[id];
-    }
-    function deleteRow(id, idx) {
-        const data = getTableDataRef(id);
-        if (data) { data.splice(idx, 1); fillTable(id, data); }
-    }
-    function addRow(id) {
-        const data = getTableDataRef(id);
-        if (data) { data.push({ qty: 0, price: 0 }); fillTable(id, data); }
-        if (id === 'brochure-paliers') { prixData.paliers_brochure.couleur_recto_verso.push({ min: 0, max: 999, price: 1 }); fillBrochureTable(prixData.paliers_brochure.couleur_recto_verso); }
-    }
-    function updateBrochureRow(idx, field, val) { if (prixData.paliers_brochure.couleur_recto_verso[idx]) prixData.paliers_brochure.couleur_recto_verso[idx][field] = parseFloat(val); }
-    function deleteBrochureRow(idx) { prixData.paliers_brochure.couleur_recto_verso.splice(idx, 1); fillBrochureTable(prixData.paliers_brochure.couleur_recto_verso); }
-
-    function saveAllPrices() {
-        prixData.tarifs.flyer.recto = getTableData('flyer-recto');
-        prixData.tarifs.flyer.rectoVerso = getTableData('flyer-rectoverso');
-        prixData.tarifs.carte.recto = getTableData('carte-recto');
-        prixData.tarifs.carte.pellicule = getTableData('carte-pellicule');
-        prixData.tarifs.depliant = getTableData('depliant');
-        prixData.tarifs.entete = getTableData('entete');
-        prixData.tarifs.affiche = getTableData('affiche');
-        prixData.prix_couverture_livre = { a4: { recto: parseFloat(document.getElementById('livre-a4-recto').value), rectoVerso: parseFloat(document.getElementById('livre-a4-rectoverso').value) }, a5: { recto: parseFloat(document.getElementById('livre-a5-recto').value), rectoVerso: parseFloat(document.getElementById('livre-a5-rectoverso').value) } };
-        prixData.prix_fixes = { pelliculage: parseFloat(document.getElementById('prix-pelliculage').value), feuille_nb: parseFloat(document.getElementById('prix-feuille-nb').value), offset_100: parseFloat(document.getElementById('prix-offset-100').value), gramme_couche: parseFloat(document.getElementById('prix-gramme-couche').value) };
-        prixData.tva_rate = parseFloat(document.getElementById('prix-tva').value) / 100;
-        prixData.version = Date.now();
-        localStorage.setItem('SIMPACT_PRIX_CONFIG', JSON.stringify(prixData));
-        const btn = document.querySelector('.btn-nav.amber');
-        btn.textContent = '✅ Sauvegardé !';
-        setTimeout(() => { btn.textContent = '💾 Sauvegarder'; }, 2000);
-    }
-
-    function resetOrders() {
-        if (confirm('Supprimer TOUTES les commandes ? Cette action est irréversible.')) {
-            localStorage.removeItem('SIMPACT_ORDERS');
-            localStorage.removeItem('SIMPACT_QUOTES');
-            alert('Commandes supprimées.');
+        // FONCTIONS UTILITAIRES
+        function switchTab(id) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            event.target.classList.add('active');
+            document.getElementById(id).classList.add('active');
         }
-    }
 
-    function resetConfig() {
-        if (confirm('Réinitialiser les prix depuis le fichier par défaut ?')) {
-            localStorage.removeItem('SIMPACT_PRIX_CONFIG');
-            loadPrices();
+        function setVal(id, val) { if(val !== undefined) document.getElementById(id).value = val; }
+
+        function fillTable(id, data) {
+            const tbody = document.querySelector(`#${id}-table tbody`);
+            tbody.innerHTML = '';
+            if(!data) return;
+            data.forEach(item => {
+                const row = tbody.insertRow();
+                row.innerHTML = `
+                    <td><input type="number" value="${item.qty || item.min || 0}"></td>
+                    <td><input type="number" value="${item.price || item.max || 0}"></td>
+                    <td><button class="delete-btn" onclick="this.closest('tr').remove()">×</button></td>
+                `;
+            });
         }
-    }
 
-    // USERS
-    function renderUsersTable() {
-        const users = getUsers();
-        document.getElementById('users-tbody').innerHTML = users.map(u => `
-            <tr>
-                <td style="font-family:'DM Mono',monospace;font-size:0.85rem;">${u.id}</td>
-                <td><strong>${u.name}</strong></td>
-                <td><span class="role-badge role-${u.role}">${u.role}</span></td>
-                <td style="font-size:0.82rem;color:var(--muted);">${u.redirect || '—'}</td>
-                <td>
-                    <button class="btn-edit-u" onclick="editUser('${u.id}')">✏️ Modifier</button>
-                    ${u.role !== 'superadmin' ? `<button class="btn-del-u" onclick="removeUser('${u.id}')">🗑️</button>` : ''}
-                </td>
-            </tr>
-        `).join('');
-    }
+        function fillBrochureTable(data) {
+            const tbody = document.querySelector('#brochure-paliers-table tbody');
+            tbody.innerHTML = '';
+            if(!data) return;
+            data.forEach(item => {
+                const row = tbody.insertRow();
+                row.innerHTML = `
+                    <td><input type="number" value="${item.min}"></td>
+                    <td><input type="number" value="${item.max}"></td>
+                    <td><input type="number" value="${item.price}"></td>
+                    <td><button class="delete-btn" onclick="this.closest('tr').remove()">×</button></td>
+                `;
+            });
+        }
 
-    function editUser(userId) {
-        const users = getUsers();
-        const u = users.find(x => x.id === userId);
-        if (!u) return;
-        document.getElementById('user-original-id').value = u.id;
-        document.getElementById('u-id').value = u.id;
-        document.getElementById('u-pass').value = '';
-        document.getElementById('u-name').value = u.name;
-        document.getElementById('u-role').value = u.role;
-        document.getElementById('u-redirect').value = u.redirect || 'client.html';
-        document.getElementById('form-title').textContent = '✏️ Modifier : ' + u.name;
-        document.getElementById('u-pass').placeholder = 'Laisser vide = garder l\'actuel';
-        document.getElementById('u-pass').required = false;
-    }
+        function addRow(type) {
+            const tbody = type === 'brochure-paliers' 
+                ? document.querySelector(`#${type}-table tbody`)
+                : document.querySelector(`#${type}-table tbody`);
+                
+            const row = tbody.insertRow();
+            if(type === 'brochure-paliers') {
+                row.innerHTML = `<td><input type="number" value="0"></td><td><input type="number" value="0"></td><td><input type="number" value="0"></td><td><button class="delete-btn" onclick="this.closest('tr').remove()">×</button></td>`;
+            } else {
+                row.innerHTML = `<td><input type="number" value="0"></td><td><input type="number" value="0"></td><td><button class="delete-btn" onclick="this.closest('tr').remove()">×</button></td>`;
+            }
+        }
 
-    function saveUserForm(e) {
-        e.preventDefault();
-        const origId = document.getElementById('user-original-id').value;
-        const passVal = document.getElementById('u-pass').value;
-        const ok = addOrUpdateUser({
-            originalId: origId,
-            id: document.getElementById('u-id').value.trim(),
-            pass: passVal,
-            passChanged: passVal.length > 0,
-            name: document.getElementById('u-name').value.trim(),
-            role: document.getElementById('u-role').value,
-            redirect: document.getElementById('u-redirect').value
-        });
-        if (ok) { renderUsersTable(); resetUserForm(); alert('✅ Utilisateur sauvegardé !'); }
-    }
+        function getTableData(id) {
+            return Array.from(document.querySelectorAll(`#${id}-table tbody tr`)).map(row => {
+                const inputs = row.querySelectorAll('input');
+                return { qty: parseFloat(inputs[0].value), price: parseFloat(inputs[1].value) };
+            });
+        }
 
-    function removeUser(userId) {
-        if (!confirm('Supprimer cet utilisateur ?')) return;
-        if (deleteUser(userId)) renderUsersTable();
-    }
+        function getBrochureData() {
+            return Array.from(document.querySelectorAll(`#brochure-paliers-table tbody tr`)).map(row => {
+                const inputs = row.querySelectorAll('input');
+                return { min: parseFloat(inputs[0].value), max: parseFloat(inputs[1].value), price: parseFloat(inputs[2].value) };
+            });
+        }
 
-    function resetUserForm() {
-        document.getElementById('user-original-id').value = '';
-        document.getElementById('u-id').value = '';
-        document.getElementById('u-pass').value = '';
-        document.getElementById('u-pass').required = true;
-        document.getElementById('u-pass').placeholder = 'Mot de passe';
-        document.getElementById('u-name').value = '';
-        document.getElementById('u-role').value = '';
-        document.getElementById('u-redirect').value = 'client.html';
-        document.getElementById('form-title').textContent = '➕ Ajouter un utilisateur';
-    }
+        // SAUVEGARDE
+        function saveAllPrices() {
+            const config = {
+                tarifs: {
+                    flyer: { recto: getTableData('flyer-recto'), rectoVerso: getTableData('flyer-rectoverso') },
+                    carte: { recto: getTableData('carte-recto'), pellicule: getTableData('carte-pellicule') },
+                    depliant: getTableData('depliant'),
+                    entete: getTableData('entete'),
+                    affiche: getTableData('affiche') // Sauvegarde des affiches
+                },
+                prix_couverture_livre: {
+                    a4: { recto: parseFloat(document.getElementById('livre-a4-recto').value), rectoVerso: parseFloat(document.getElementById('livre-a4-rectoverso').value) },
+                    a5: { recto: parseFloat(document.getElementById('livre-a5-recto').value), rectoVerso: parseFloat(document.getElementById('livre-a5-rectoverso').value) }
+                },
+                paliers_brochure: { couleur_recto_verso: getBrochureData() },
+                prix_fixes: {
+                    pelliculage: parseFloat(document.getElementById('prix-pelliculage').value),
+                    feuille_nb: parseFloat(document.getElementById('prix-feuille-nb').value),
+                    offset_100: parseFloat(document.getElementById('prix-offset-100').value),
+                    gramme_couche: parseFloat(document.getElementById('prix-gramme-couche').value)
+                },
+                version: Date.now()
+            };
 
-    loadPrices();
-    renderUsersTable();
-</script>
+            const blob = new Blob([JSON.stringify(config, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'prix_config.json';
+            a.click();
+            alert("✅ Configuration téléchargée ! Remplacez le fichier 'prix_config.json' sur GitHub.");
+        }
+
+        function resetOrders() {
+            if(confirm("⚠️ Etes-vous sûr de vouloir effacer TOUTES les commandes locales ?")) {
+                localStorage.removeItem('SIMPACT_ORDERS');
+                alert("Commandes effacées.");
+            }
+        }
+
+        loadPrices();
+
+        // ============================================
+        // GESTION DES UTILISATEURS
+        // ============================================
+
+        function openUsersModal() {
+            loadUsersTable();
+            document.getElementById('modal-users').style.display = 'flex';
+        }
+
+        function closeUsersModal() {
+            document.getElementById('modal-users').style.display = 'none';
+            resetUserForm();
+        }
+
+        function loadUsersTable() {
+            const users = getAllUsers();
+            const tbody = document.getElementById('users-table-body');
+            tbody.innerHTML = '';
+
+            users.forEach(user => {
+                const row = tbody.insertRow();
+                
+                const roleClass = `role-${user.role}`;
+                const roleName = {
+                    'superadmin': '🔴 Super Admin',
+                    'admin': '🟠 Admin',
+                    'production': '🔵 Production',
+                    'commercial': '🟣 Commercial',
+                    'compta': '🟢 Comptabilité',
+                    'client': '⚪ Client'
+                }[user.role] || user.role;
+
+                row.innerHTML = `
+                    <td style="font-family: monospace; font-weight: bold;">${user.id}</td>
+                    <td>${user.name}</td>
+                    <td><span class="role-badge ${roleClass}">${roleName}</span></td>
+                    <td style="font-size: 0.9rem; color: #94a3b8;">${user.redirect}</td>
+                    <td>
+                        <div class="action-btns">
+                            <button class="btn-edit-user" onclick='editUser(${JSON.stringify(user)})'>✏️ Modifier</button>
+                            ${user.id !== 'youssef' ? `<button class="btn-delete-user" onclick="deleteUserConfirm('${user.id}', '${user.name}')">🗑️</button>` : '<span style="color: #64748b; font-size: 0.8rem;">Protégé</span>'}
+                        </div>
+                    </td>
+                `;
+            });
+        }
+
+        function editUser(user) {
+            document.getElementById('user-original-id').value = user.id;
+            document.getElementById('user-id').value = user.id;
+            document.getElementById('user-pass').value = '';  // Ne jamais afficher le hash
+            document.getElementById('user-pass').placeholder = 'Laisser vide = mot de passe inchangé';
+            document.getElementById('user-pass').required = false;
+            document.getElementById('pass-label').textContent = 'Nouveau mot de passe (optionnel)';
+            document.getElementById('pass-hint').textContent = '⚠️ Laissez vide pour conserver l\'ancien mot de passe';
+            document.getElementById('pass-hint').style.color = '#f59e0b';
+            document.getElementById('user-name').value = user.name;
+            document.getElementById('user-role').value = user.role;
+            document.getElementById('user-redirect').value = user.redirect;
+
+            // Désactiver la modification de l'ID pour le super admin
+            if(user.id === 'youssef') {
+                document.getElementById('user-id').disabled = true;
+                document.getElementById('user-role').disabled = true;
+            } else {
+                document.getElementById('user-id').disabled = false;
+                document.getElementById('user-role').disabled = false;
+            }
+
+            // Scroll vers le formulaire
+            document.querySelector('.user-form').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function deleteUserConfirm(userId, userName) {
+            if(confirm(`⚠️ Êtes-vous sûr de vouloir supprimer l'utilisateur "${userName}" (${userId}) ?\n\nCette action est irréversible.`)) {
+                if(deleteUser(userId)) {
+                    alert('✅ Utilisateur supprimé avec succès');
+                    loadUsersTable();
+                }
+            }
+        }
+
+        function saveUserForm(event) {
+            event.preventDefault();
+
+            const originalId = document.getElementById('user-original-id').value;
+            const userId = document.getElementById('user-id').value.trim();
+            const userPassInput = document.getElementById('user-pass').value.trim();
+            const userName = document.getElementById('user-name').value.trim();
+            const userRole = document.getElementById('user-role').value;
+            const userRedirect = document.getElementById('user-redirect').value;
+
+            // Validation
+            if(!userId || !userName || !userRole || !userRedirect) {
+                alert('⚠️ Veuillez remplir tous les champs obligatoires');
+                return;
+            }
+
+            // Mot de passe : obligatoire pour la création, optionnel pour la modification
+            if(!originalId && !userPassInput) {
+                alert('⚠️ Le mot de passe est obligatoire pour un nouvel utilisateur');
+                return;
+            }
+
+            // Vérifier si l'ID existe déjà (sauf si modification du même utilisateur)
+            const users = getAllUsers();
+            const existingUser = users.find(u => u.id === userId);
+            if(existingUser && originalId !== userId) {
+                alert(`⚠️ L'identifiant "${userId}" existe déjà. Veuillez en choisir un autre.`);
+                return;
+            }
+
+            // Si modification et changement d'ID, supprimer l'ancien
+            if(originalId && originalId !== userId) {
+                deleteUser(originalId);
+            }
+
+            // Créer/Modifier l'utilisateur
+            const userData = {
+                id: userId,
+                role: userRole,
+                name: userName,
+                redirect: userRedirect
+            };
+
+            // Si un nouveau mot de passe est fourni, on l'utilise
+            // Sinon (modification sans nouveau mdp), on récupère l'ancien mot de passe existant
+            if(userPassInput) {
+                userData.pass = userPassInput;
+            } else if(originalId) {
+                const allUsers = getAllUsers();
+                const existing = allUsers.find(u => u.id === originalId);
+                if(existing) userData.pass = existing.pass; // conserver l'ancien mot de passe
+            }
+
+            saveUser(userData);
+            
+            alert(`✅ Utilisateur "${userName}" ${originalId ? 'modifié' : 'créé'} avec succès !`);
+            
+            resetUserForm();
+            loadUsersTable();
+        }
+
+        function resetUserForm() {
+            document.getElementById('user-form').reset();
+            document.getElementById('user-original-id').value = '';
+            document.getElementById('user-id').disabled = false;
+            document.getElementById('user-role').disabled = false;
+            document.getElementById('user-pass').placeholder = 'Ex: motdepasse123';
+            document.getElementById('user-pass').required = true;
+            document.getElementById('pass-label').textContent = 'Mot de passe *';
+            document.getElementById('pass-hint').textContent = 'Visible pour l\'admin';
+            document.getElementById('pass-hint').style.color = '#64748b';
+        }
+
+        // Fermer le modal en cliquant en dehors
+        window.onclick = function(event) {
+            const modal = document.getElementById('modal-users');
+            if(event.target === modal) {
+                closeUsersModal();
+            }
+        }
+    </script>
 </body>
 </html>
