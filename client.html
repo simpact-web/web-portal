@@ -3,300 +3,128 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SIMPACT — Espace Client</title>
-    <script src="users.js?v=3"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <title>SIMPACT — Mon Espace</title>
+    <script src="users.js?v=2"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400&display=swap" rel="stylesheet">
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         :root {
-            --bg:      #0d0d12;
-            --surface: #16161f;
-            --card:    #1e1e2a;
-            --border:  #2a2a38;
-            --red:     #e02020;
-            --red-dim: rgba(224,32,32,0.12);
-            --red-glow:rgba(224,32,32,0.25);
-            --white:   #f0f0f5;
-            --muted:   #6b6b80;
-            --green:   #22c55e;
-            --amber:   #f59e0b;
-            --blue:    #3b82f6;
+            --bg: #f5f3ee; --ink: #0a0a0f; --white: #fff;
+            --purple: #6d28d9; --purple-light: #8b5cf6; --purple-pale: #f5f3ff;
+            --green: #059669; --amber: #d97706; --red: #dc2626;
+            --border: #e2ddd5; --muted: #6b7280; --light: #f8f7f4;
         }
+        body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--ink); min-height: 100vh; }
 
-        body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--white); min-height: 100vh; }
+        /* TOPBAR */
+        .topbar { background: var(--ink); color: white; display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 2rem; position: sticky; top: 0; z-index: 100; }
+        .topbar-brand { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.1rem; display: flex; align-items: center; gap: 10px; }
+        .topbar-brand span { background: var(--purple); padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; }
+        .topbar-right { display: flex; align-items: center; gap: 12px; }
+        .user-chip { background: rgba(255,255,255,0.1); padding: 4px 12px; border-radius: 20px; font-size: 0.85rem; }
+        .btn-logout { background: transparent; border: 1px solid rgba(255,255,255,0.2); color: white; padding: 5px 12px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; }
+        .btn-logout:hover { background: rgba(255,255,255,0.1); }
 
-        /* ── TOPBAR ── */
-        .topbar {
-            background: var(--surface);
-            border-bottom: 1px solid var(--border);
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 0 2rem; height: 58px;
-            position: sticky; top: 0; z-index: 100;
-        }
-        .topbar-brand { display: flex; align-items: center; gap: 10px; }
-        .topbar-logo { height: 28px; }
-        .topbar-badge { background: var(--red); color: white; font-size: 0.65rem; font-weight: 700; padding: 2px 7px; border-radius: 3px; letter-spacing: 1px; font-family: 'Syne', sans-serif; }
-        .topbar-right { display: flex; align-items: center; gap: 14px; }
-        .user-chip { color: var(--muted); font-size: 0.82rem; }
-        .user-chip strong { color: var(--white); font-weight: 600; }
-        .btn-logout { background: transparent; border: 1px solid var(--border); color: var(--muted); padding: 5px 14px; border-radius: 6px; cursor: pointer; font-size: 0.82rem; transition: 0.2s; font-family: 'DM Sans', sans-serif; }
-        .btn-logout:hover { border-color: var(--red); color: var(--red); }
-
-        /* ── HERO WELCOME ── */
-        .hero {
-            background: linear-gradient(135deg, #16161f 0%, #1a0a0a 60%, #200a0a 100%);
-            border-bottom: 1px solid var(--border);
-            padding: 2rem 2rem 0;
-            max-width: 1000px; margin: 0 auto;
-        }
-        .hero-inner { display: flex; align-items: flex-end; justify-content: space-between; gap: 2rem; }
-        .hero-left { padding-bottom: 1.5rem; }
-        .hero-greeting { font-size: 0.78rem; color: var(--red); text-transform: uppercase; letter-spacing: 2px; font-weight: 600; margin-bottom: 0.5rem; }
-        .hero-name { font-family: 'Syne', sans-serif; font-size: 2rem; font-weight: 800; line-height: 1.1; }
-        .hero-sub { color: var(--muted); font-size: 0.85rem; margin-top: 0.4rem; }
-        .hero-avatar {
-            width: 72px; height: 72px; border-radius: 16px;
-            background: linear-gradient(135deg, var(--red), #a00);
-            display: flex; align-items: center; justify-content: center;
-            font-family: 'Syne', sans-serif; font-size: 1.6rem; font-weight: 800;
-            color: white; flex-shrink: 0; margin-bottom: 1.5rem;
-            box-shadow: 0 8px 24px var(--red-glow);
-        }
-
-        /* ── TABS ── */
-        .tabs {
-            max-width: 1000px; margin: 0 auto;
-            display: flex; gap: 0;
-            border-bottom: 1px solid var(--border);
-            padding: 0 2rem;
-            background: var(--surface);
-        }
-        .tab-btn {
-            padding: 0.9rem 1.5rem;
-            background: transparent; border: none; border-bottom: 2px solid transparent;
-            color: var(--muted); cursor: pointer; font-family: 'DM Sans', sans-serif;
-            font-size: 0.88rem; font-weight: 500; transition: all 0.2s;
-            margin-bottom: -1px;
-        }
-        .tab-btn:hover { color: var(--white); }
-        .tab-btn.active { color: var(--red); border-bottom-color: var(--red); font-weight: 600; }
+        /* TABS */
+        .tabs { display: flex; gap: 4px; padding: 1.5rem 2rem 0; max-width: 900px; margin: 0 auto; }
+        .tab-btn { padding: 0.6rem 1.25rem; border: 1.5px solid var(--border); border-radius: 8px 8px 0 0; background: transparent; cursor: pointer; font-family: 'DM Sans', sans-serif; font-weight: 500; font-size: 0.88rem; color: var(--muted); transition: all 0.2s; border-bottom: none; }
+        .tab-btn.active { background: var(--white); color: var(--ink); border-color: var(--border); font-weight: 600; }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
 
-        /* ── PAGE ── */
-        .page { max-width: 1000px; margin: 0 auto; padding: 2rem; }
+        /* PAGE */
+        .page { max-width: 900px; margin: 0 auto; padding: 0 2rem 3rem; }
+        .panel { background: var(--white); border: 1px solid var(--border); border-radius: 0 14px 14px 14px; padding: 2rem; }
 
-        /* ── DASHBOARD ── */
-        .dashboard-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1.5rem; }
-        .dash-card {
-            background: var(--card); border: 1px solid var(--border);
-            border-radius: 12px; padding: 1.25rem;
-        }
-        .dash-card-label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); font-weight: 600; margin-bottom: 0.6rem; }
-        .dash-card-value { font-family: 'Syne', sans-serif; font-size: 1.8rem; font-weight: 700; color: var(--white); }
-        .dash-card-sub { font-size: 0.78rem; color: var(--muted); margin-top: 4px; }
-        .dash-card.accent { border-color: var(--red-glow); background: var(--red-dim); }
-        .dash-card.accent .dash-card-value { color: var(--red); }
+        /* STATS HEADER */
+        .stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 2rem; }
+        .stat-box { background: var(--light); border: 1px solid var(--border); border-radius: 10px; padding: 1.25rem; text-align: center; }
+        .stat-value { font-family: 'DM Mono', monospace; font-size: 1.6rem; font-weight: 500; color: var(--purple); }
+        .stat-label { font-size: 0.78rem; color: var(--muted); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
 
-        /* Dernière commande */
-        .last-order-card {
-            background: var(--card); border: 1px solid var(--border); border-radius: 12px;
-            padding: 1.25rem; margin-bottom: 1.5rem;
-        }
-        .last-order-title { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 1rem; font-weight: 600; }
-        .progress-steps { display: flex; align-items: center; gap: 0; }
-        .step { display: flex; flex-direction: column; align-items: center; flex: 1; position: relative; }
-        .step:not(:last-child)::after {
-            content: ''; position: absolute; top: 14px; left: 50%; width: 100%;
-            height: 2px; background: var(--border); z-index: 0;
-        }
-        .step.done:not(:last-child)::after { background: var(--red); }
-        .step-dot {
-            width: 28px; height: 28px; border-radius: 50%; border: 2px solid var(--border);
-            background: var(--surface); display: flex; align-items: center; justify-content: center;
-            font-size: 0.7rem; z-index: 1; position: relative; transition: 0.3s;
-        }
-        .step.done .step-dot { background: var(--red); border-color: var(--red); color: white; }
-        .step.active .step-dot { border-color: var(--red); color: var(--red); box-shadow: 0 0 0 3px var(--red-glow); }
-        .step-label { font-size: 0.68rem; color: var(--muted); margin-top: 6px; text-align: center; font-weight: 500; }
-        .step.done .step-label, .step.active .step-label { color: var(--white); }
-        .last-order-info { display: flex; justify-content: space-between; margin-bottom: 1rem; }
-        .last-order-prod { font-weight: 600; font-size: 0.95rem; }
-        .last-order-ref { font-size: 0.75rem; color: var(--muted); font-family: 'DM Mono', monospace; }
+        /* LOYALTY */
+        .loyalty-bar-wrap { margin-bottom: 2rem; }
+        .loyalty-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .loyalty-label { font-size: 0.82rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
+        .loyalty-badge { font-size: 0.8rem; font-weight: 700; padding: 3px 10px; border-radius: 12px; }
+        .loyalty-bronze { background: #fed7aa; color: #9a3412; }
+        .loyalty-silver { background: #e2e8f0; color: #334155; }
+        .loyalty-gold { background: #fef3c7; color: #92400e; }
+        .loyalty-platinum { background: #ede9fe; color: #5b21b6; }
+        .loyalty-bar { height: 8px; background: #e2e8f0; border-radius: 4px; overflow: hidden; }
+        .loyalty-fill { height: 100%; background: linear-gradient(90deg, var(--purple), var(--purple-light)); border-radius: 4px; transition: width 0.6s ease; }
+        .loyalty-tip { font-size: 0.78rem; color: var(--muted); margin-top: 5px; }
 
-        /* ── HISTORY ── */
-        .order-row {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 1.1rem 1.25rem;
-            background: var(--card); border: 1px solid var(--border);
-            border-radius: 10px; margin-bottom: 0.6rem;
-            transition: border-color 0.2s;
-        }
-        .order-row:hover { border-color: rgba(224,32,32,0.3); }
+        /* ORDER HISTORY */
+        .order-row { display: flex; justify-content: space-between; align-items: center; padding: 1rem 0; border-bottom: 1px solid var(--border); }
+        .order-row:last-child { border-bottom: none; }
         .order-info { flex: 1; }
         .order-prod { font-weight: 600; font-size: 0.92rem; }
-        .order-meta { font-size: 0.75rem; color: var(--muted); margin-top: 3px; font-family: 'DM Mono', monospace; }
-        .order-right { display: flex; align-items: center; gap: 1rem; }
-        .status-badge { font-size: 0.72rem; font-weight: 700; padding: 4px 10px; border-radius: 20px; letter-spacing: 0.5px; white-space: nowrap; }
-        .status-done   { background: rgba(34,197,94,0.15);  color: #4ade80; }
-        .status-wait   { background: rgba(245,158,11,0.15); color: #fbbf24; }
-        .status-prod   { background: rgba(59,130,246,0.15); color: #93c5fd; }
-        .status-web    { background: rgba(224,32,32,0.15);  color: #f87171; }
-        .order-price { font-family: 'DM Mono', monospace; font-size: 0.88rem; color: var(--muted); white-space: nowrap; }
-        .btn-reprint {
-            background: transparent; border: 1px solid var(--border);
-            color: var(--muted); padding: 5px 12px; border-radius: 6px;
-            cursor: pointer; font-size: 0.78rem; font-family: 'DM Sans', sans-serif;
-            transition: 0.2s; white-space: nowrap;
-        }
-        .btn-reprint:hover { border-color: var(--red); color: var(--red); background: var(--red-dim); }
+        .order-meta { font-size: 0.78rem; color: var(--muted); margin-top: 3px; }
+        .order-status { display: flex; flex-direction: column; align-items: flex-end; gap: 5px; }
+        .status-badge { font-size: 0.75rem; font-weight: 600; padding: 3px 10px; border-radius: 12px; }
+        .status-prod { background: #dbeafe; color: #1e40af; }
+        .status-done { background: #dcfce7; color: #166534; }
+        .status-wait { background: #fef3c7; color: #92400e; }
+        .order-price { font-family: 'DM Mono', monospace; font-size: 0.9rem; font-weight: 500; }
 
-        /* ── COMMANDE FORM ── */
-        .form-section { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 2rem; }
+        /* COMMANDE FORM */
         .form-group { margin-bottom: 1.1rem; }
-        .form-group label { display: block; font-size: 0.75rem; font-weight: 600; color: var(--muted); margin-bottom: 0.4rem; text-transform: uppercase; letter-spacing: 0.8px; }
+        .form-group label { display: block; font-size: 0.8rem; font-weight: 500; color: var(--muted); margin-bottom: 0.4rem; text-transform: uppercase; letter-spacing: 0.5px; }
         .form-group select, .form-group input, .form-group textarea {
             width: 100%; padding: 0.75rem 0.9rem;
-            background: var(--surface); border: 1.5px solid var(--border);
+            background: var(--light); border: 1.5px solid var(--border);
             border-radius: 8px; font-family: 'DM Sans', sans-serif;
-            font-size: 0.92rem; color: var(--white); outline: none; transition: border-color 0.2s;
+            font-size: 0.92rem; color: var(--ink); outline: none; transition: border-color 0.2s;
         }
-        .form-group select option { background: #1e1e2a; }
-        .form-group select:focus, .form-group input:focus, .form-group textarea:focus { border-color: var(--red); }
-
-        .option-group { display: none; background: rgba(224,32,32,0.05); padding: 1.25rem; border-radius: 10px; border: 1px solid rgba(224,32,32,0.2); margin-bottom: 1rem; animation: fadeUp 0.25s ease; }
+        .form-group select:focus, .form-group input:focus, .form-group textarea:focus { border-color: var(--purple); background: white; }
+        .option-group { display: none; background: var(--purple-pale); padding: 1.25rem; border-radius: 10px; border: 1px solid #ddd6fe; margin-bottom: 1rem; animation: fadeUp 0.25s ease; }
         .option-group.active { display: block; }
         @keyframes fadeUp { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
-
         .radio-row { display: flex; gap: 8px; }
         .radio-opt { flex: 1; }
         .radio-opt input { display: none; }
-        .radio-opt label { display: flex; align-items: center; justify-content: center; padding: 0.6rem; border: 1.5px solid var(--border); border-radius: 7px; cursor: pointer; font-size: 0.85rem; font-weight: 500; background: var(--surface); color: var(--muted); transition: all 0.15s; }
-        .radio-opt input:checked + label { background: var(--red); color: white; border-color: var(--red); }
+        .radio-opt label { display: flex; align-items: center; justify-content: center; padding: 0.6rem; border: 1.5px solid var(--border); border-radius: 7px; cursor: pointer; font-size: 0.85rem; font-weight: 500; background: white; transition: all 0.15s; }
+        .radio-opt input:checked + label { background: var(--purple); color: white; border-color: var(--purple); }
 
-        .price-box {
-            background: linear-gradient(135deg, #1a0505, #200a0a);
-            border: 1px solid var(--red-glow);
-            color: white; padding: 1.5rem; border-radius: 12px;
-            text-align: center; margin: 1.5rem 0;
-        }
-        .price-ht { font-family: 'Syne', sans-serif; font-size: 2.2rem; color: #ff6b6b; font-weight: 800; }
-        .price-sub { font-size: 0.8rem; color: rgba(255,255,255,0.4); margin-top: 6px; }
+        .price-box { background: var(--ink); color: white; padding: 1.5rem; border-radius: 12px; text-align: center; margin: 1.5rem 0; }
+        .price-ht { font-family: 'DM Mono', monospace; font-size: 2rem; color: #a78bfa; }
+        .price-sub { font-size: 0.8rem; color: rgba(255,255,255,0.5); margin-top: 4px; }
 
-        .btn-calc { width: 100%; padding: 0.9rem; background: transparent; border: 1.5px solid var(--red); color: var(--red); border-radius: 9px; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.92rem; cursor: pointer; transition: 0.2s; margin-bottom: 0.75rem; }
-        .btn-calc:hover { background: var(--red); color: white; box-shadow: 0 4px 20px var(--red-glow); }
-        .btn-order { width: 100%; padding: 1rem; background: var(--red); color: white; border: none; border-radius: 9px; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1rem; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 20px var(--red-glow); }
-        .btn-order:hover { background: #c01818; transform: translateY(-1px); }
-        .btn-order:disabled { background: #2a2a38; color: var(--muted); cursor: not-allowed; box-shadow: none; transform: none; }
+        .btn-calc { width: 100%; padding: 0.9rem; background: transparent; border: 1.5px solid var(--purple); color: var(--purple); border-radius: 9px; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.92rem; cursor: pointer; transition: 0.2s; margin-bottom: 0.75rem; }
+        .btn-calc:hover { background: var(--purple); color: white; }
+        .btn-order { width: 100%; padding: 1rem; background: var(--green); color: white; border: none; border-radius: 9px; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1rem; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 14px rgba(5,150,105,0.25); }
+        .btn-order:hover { background: #047857; transform: translateY(-1px); }
+        .btn-order:disabled { background: #d1d5db; cursor: not-allowed; box-shadow: none; transform: none; }
 
-        .pao-section { border: 1.5px dashed rgba(224,32,32,0.3); padding: 1.25rem; border-radius: 10px; background: rgba(224,32,32,0.04); margin-bottom: 1rem; }
+        .pao-section { border: 1.5px dashed var(--purple-light); padding: 1.25rem; border-radius: 10px; background: var(--purple-pale); margin-bottom: 1rem; }
         .pao-desc { font-size: 0.8rem; color: var(--muted); margin-top: 5px; font-style: italic; }
 
-        .success-banner { background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.3); color: #4ade80; padding: 1rem 1.25rem; border-radius: 10px; margin-bottom: 1rem; display: none; font-weight: 500; }
-
-        /* ── MON COMPTE ── */
-        .loyalty-bar { height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; margin: 8px 0 5px; }
-        .loyalty-fill { height: 100%; background: linear-gradient(90deg, var(--red), #ff6b6b); border-radius: 3px; transition: width 0.6s ease; }
-        .loyalty-badge { font-size: 0.72rem; font-weight: 700; padding: 3px 10px; border-radius: 12px; }
-        .lv-bronze   { background: rgba(180,83,9,0.2);   color: #fb923c; }
-        .lv-silver   { background: rgba(100,116,139,0.2); color: #94a3b8; }
-        .lv-gold     { background: rgba(234,179,8,0.2);   color: #fbbf24; }
-        .lv-platinum { background: rgba(224,32,32,0.2);   color: #f87171; }
-
-        .contact-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem; display: flex; align-items: center; gap: 1rem; margin-top: 1.5rem; }
-        .contact-avatar { width: 48px; height: 48px; border-radius: 50%; background: var(--red); display: flex; align-items: center; justify-content: center; font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.1rem; flex-shrink: 0; }
-        .contact-info { flex: 1; }
-        .contact-name { font-weight: 600; font-size: 0.95rem; }
-        .contact-role { font-size: 0.78rem; color: var(--muted); }
-        .contact-links { display: flex; gap: 8px; margin-top: 8px; }
-        .contact-link { font-size: 0.78rem; color: var(--red); text-decoration: none; border: 1px solid rgba(224,32,32,0.3); padding: 3px 10px; border-radius: 5px; transition: 0.2s; }
-        .contact-link:hover { background: var(--red); color: white; }
-
-        /* REPRINT MODAL */
-        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 200; display: none; align-items: center; justify-content: center; }
-        .modal-overlay.open { display: flex; }
-        .modal { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 2rem; max-width: 480px; width: 90%; }
-        .modal-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.1rem; margin-bottom: 0.5rem; }
-        .modal-sub { color: var(--muted); font-size: 0.85rem; margin-bottom: 1.5rem; }
-        .modal-product { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; margin-bottom: 1.5rem; font-size: 0.88rem; line-height: 1.7; }
-        .modal-product strong { color: var(--red); }
-        .modal-qty { width: 100%; padding: 0.75rem; background: var(--surface); border: 1.5px solid var(--border); border-radius: 8px; color: var(--white); font-family: 'DM Sans', sans-serif; font-size: 0.95rem; margin-bottom: 1rem; }
-        .modal-qty:focus { outline: none; border-color: var(--red); }
-        .modal-actions { display: flex; gap: 0.75rem; }
-        .btn-modal-cancel { flex: 1; padding: 0.8rem; background: transparent; border: 1px solid var(--border); color: var(--muted); border-radius: 8px; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: 0.2s; }
-        .btn-modal-cancel:hover { border-color: var(--white); color: var(--white); }
-        .btn-modal-confirm { flex: 2; padding: 0.8rem; background: var(--red); color: white; border: none; border-radius: 8px; cursor: pointer; font-family: 'Syne', sans-serif; font-weight: 700; transition: 0.2s; }
-        .btn-modal-confirm:hover { background: #c01818; }
-
-        @media (max-width: 640px) {
-            .dashboard-grid { grid-template-columns: 1fr 1fr; }
-            .hero-name { font-size: 1.5rem; }
-            .page { padding: 1rem; }
-        }
+        /* SUCCESS */
+        .success-banner { background: #dcfce7; border: 1px solid #86efac; color: #166534; padding: 1rem 1.25rem; border-radius: 10px; margin-bottom: 1rem; display: none; font-weight: 500; }
     </style>
 </head>
 <body>
 
-<!-- TOPBAR -->
 <div class="topbar">
-    <div class="topbar-brand">
-        <span style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.1rem;letter-spacing:1px;">SIMPACT</span>
-        <span class="topbar-badge">VIP</span>
-    </div>
+    <div class="topbar-brand">SIMPACT <span>ESPACE CLIENT</span></div>
     <div class="topbar-right">
-        <span class="user-chip">Bonjour, <strong id="client-name-display">—</strong></span>
+        <span class="user-chip">👤 <span id="client-name-display">—</span></span>
         <button class="btn-logout" onclick="logout()">Déconnexion</button>
     </div>
 </div>
 
-<!-- HERO -->
-<div style="background:linear-gradient(135deg,#16161f 0%,#1a0808 100%);border-bottom:1px solid #2a2a38;">
-    <div class="hero" style="padding-bottom:0;">
-        <div class="hero-inner">
-            <div class="hero-left">
-                <div class="hero-greeting">Espace Client Simpact</div>
-                <div class="hero-name" id="hero-name">—</div>
-                <div class="hero-sub">Bienvenue sur votre portail d'impression professionnel</div>
-            </div>
-            <div class="hero-avatar" id="hero-avatar">—</div>
-        </div>
-    </div>
-</div>
-
-<!-- TABS -->
 <div class="tabs">
-    <button class="tab-btn active" onclick="switchTab('tab-dashboard', this)">📊 Tableau de bord</button>
-    <button class="tab-btn" onclick="switchTab('tab-order', this)">✏️ Commander</button>
+    <button class="tab-btn active" onclick="switchTab('tab-order', this)">✏️ Commander</button>
     <button class="tab-btn" onclick="switchTab('tab-history', this)">📦 Mes commandes</button>
     <button class="tab-btn" onclick="switchTab('tab-account', this)">⭐ Mon compte</button>
 </div>
 
 <div class="page">
+    <div class="panel">
 
-    <!-- ── DASHBOARD ── -->
-    <div id="tab-dashboard" class="tab-content active">
-        <div class="dashboard-grid" id="dash-stats"></div>
-        <div class="last-order-card" id="last-order-wrap" style="display:none;">
-            <div class="last-order-title">🕐 Dernière commande</div>
-            <div class="last-order-info">
-                <div>
-                    <div class="last-order-prod" id="last-prod">—</div>
-                    <div class="last-order-ref" id="last-ref">—</div>
-                </div>
-                <div id="last-badge"></div>
-            </div>
-            <div class="progress-steps" id="progress-steps"></div>
-        </div>
-        <div style="text-align:center;margin-top:2rem;">
-            <button class="btn-order" style="max-width:320px;" onclick="switchTab('tab-order', document.querySelectorAll('.tab-btn')[1])">
-                ✏️ Passer une nouvelle commande
-            </button>
-        </div>
-    </div>
-
-    <!-- ── COMMANDER ── -->
-    <div id="tab-order" class="tab-content">
-        <div class="form-section">
+        <!-- ── COMMANDER ── -->
+        <div id="tab-order" class="tab-content active">
             <div id="success-banner" class="success-banner">✅ Votre commande a bien été envoyée ! Nous vous contacterons sous 24h pour confirmation.</div>
 
             <div class="form-group">
@@ -333,7 +161,7 @@
             <div class="pao-section">
                 <div class="form-group" style="margin-bottom:0.5rem;">
                     <label>📁 Fichier d'impression</label>
-                    <input type="file" id="file-upload" accept=".pdf,.ai,.zip,.png,.jpg" style="color:var(--muted);">
+                    <input type="file" id="file-upload" accept=".pdf,.ai,.zip,.png,.jpg">
                 </div>
                 <div class="form-group" style="margin-bottom:0;">
                     <label>🎨 Service Création Graphique (PAO)</label>
@@ -357,47 +185,26 @@
                 <div class="price-ht" id="price-display">—</div>
                 <div class="price-sub" id="price-sub">Estimez votre prix ci-dessus</div>
             </div>
-            <button class="btn-order" id="btn-order" onclick="submitClientOrder()" disabled>Envoyer ma commande →</button>
+            <button class="btn-order" id="btn-order" onclick="submitClientOrder()" disabled>✅ Envoyer ma commande</button>
         </div>
-    </div>
 
-    <!-- ── HISTORIQUE ── -->
-    <div id="tab-history" class="tab-content">
-        <div id="history-content"><p style="text-align:center;color:var(--muted);padding:3rem;">Chargement...</p></div>
-    </div>
-
-    <!-- ── MON COMPTE ── -->
-    <div id="tab-account" class="tab-content">
-        <div id="account-content"></div>
-    </div>
-
-</div>
-
-<!-- MODAL RÉIMPRESSION -->
-<div class="modal-overlay" id="reprint-modal">
-    <div class="modal">
-        <div class="modal-title">🔄 Commander à nouveau</div>
-        <div class="modal-sub">Confirmez les détails de votre réimpression</div>
-        <div class="modal-product" id="reprint-details">—</div>
-        <label style="display:block;font-size:0.75rem;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.8px;">Nouvelle quantité</label>
-        <input class="modal-qty" type="number" id="reprint-qty" placeholder="Ex: 500">
-        <div class="modal-actions">
-            <button class="btn-modal-cancel" onclick="closeReprintModal()">Annuler</button>
-            <button class="btn-modal-confirm" onclick="confirmReprint()">✅ Confirmer la commande</button>
+        <!-- ── HISTORIQUE ── -->
+        <div id="tab-history" class="tab-content">
+            <div id="history-content"><p style="text-align:center;color:var(--muted);padding:2rem;">Chargement...</p></div>
         </div>
+
+        <!-- ── MON COMPTE ── -->
+        <div id="tab-account" class="tab-content">
+            <div id="account-content"></div>
+        </div>
+
     </div>
 </div>
 
 <script>
     const user = checkAuth('client');
-    let _reprintOrder = null;
-
     if (user) {
-        const initials = user.name.split(' ').map(w => w[0]).join('').substring(0,2).toUpperCase();
         document.getElementById('client-name-display').textContent = user.name;
-        document.getElementById('hero-name').textContent = user.name;
-        document.getElementById('hero-avatar').textContent = initials;
-        document.title = 'SIMPACT — ' + user.name;
     }
 
     let TARIFS = {};
@@ -417,217 +224,6 @@
     }
     loadPrices();
 
-    // ── DASHBOARD ──
-    function loadDashboard() {
-        const orders = getOrders().filter(o => o.clientId === user.id || o.client === user.name);
-        const count = orders.length;
-        const enCours = orders.filter(o => o.statusProd === 'En attente' || o.statusProd === 'En cours').length;
-        const terminees = orders.filter(o => o.statusProd === 'Terminé').length;
-        const products = {};
-        orders.forEach(o => { products[o.prod] = (products[o.prod] || 0) + 1; });
-        const topProd = Object.keys(products).sort((a,b) => products[b]-products[a])[0] || '—';
-
-        document.getElementById('dash-stats').innerHTML = `
-            <div class="dash-card accent">
-                <div class="dash-card-label">Commandes total</div>
-                <div class="dash-card-value">${count}</div>
-                <div class="dash-card-sub">depuis le début</div>
-            </div>
-            <div class="dash-card">
-                <div class="dash-card-label">En cours</div>
-                <div class="dash-card-value">${enCours}</div>
-                <div class="dash-card-sub">en production</div>
-            </div>
-            <div class="dash-card">
-                <div class="dash-card-label">Produit favori</div>
-                <div class="dash-card-value" style="font-size:1.1rem;padding-top:6px;">${topProd !== '—' ? topProd.split(' ')[0] : '—'}</div>
-                <div class="dash-card-sub">${topProd !== '—' ? (products[topProd] + ' commande(s)') : 'Aucune commande'}</div>
-            </div>
-        `;
-
-        // Dernière commande + barre de progression
-        if (orders.length > 0) {
-            const last = orders[0];
-            document.getElementById('last-order-wrap').style.display = 'block';
-            document.getElementById('last-prod').textContent = last.prod + ' ×' + last.qty;
-            document.getElementById('last-ref').textContent = last.ref + ' · ' + formatDate(last.date);
-            document.getElementById('last-badge').innerHTML = `<span class="status-badge ${statusClass(last.statusProd)}">${last.statusProd}</span>`;
-
-            const steps = [
-                { label: 'Reçue',       icon: '📥', done: true },
-                { label: 'Validée',     icon: '✅', done: last.statusProd !== 'À Valider (Web)' },
-                { label: 'Production',  icon: '⚙️', done: last.statusProd === 'En cours' || last.statusProd === 'Terminé' || last.statusProd === 'Livré' },
-                { label: 'Prête',       icon: '📦', done: last.statusProd === 'Terminé' || last.statusProd === 'Livré' },
-                { label: 'Livrée',      icon: '🚚', done: last.statusProd === 'Livré' }
-            ];
-
-            const activeIdx = steps.map(s => s.done).lastIndexOf(true);
-            document.getElementById('progress-steps').innerHTML = steps.map((s, i) => `
-                <div class="step ${s.done ? 'done' : (i === activeIdx + 1 ? 'active' : '')}">
-                    <div class="step-dot">${s.done ? '✓' : s.icon}</div>
-                    <div class="step-label">${s.label}</div>
-                </div>
-            `).join('');
-        }
-    }
-
-    // ── HISTORIQUE ──
-    function formatDate(dateStr) {
-        if (!dateStr) return '—';
-        if (/^\d{2}\/\d{2}\/\d{4}/.test(dateStr)) return dateStr;
-        try {
-            const d = new Date(dateStr);
-            if (isNaN(d)) return dateStr;
-            return d.toLocaleDateString('fr-FR') + ' ' + d.toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'});
-        } catch(e) { return dateStr; }
-    }
-
-    function statusClass(s) {
-        if (s === 'Terminé' || s === 'Livré') return 'status-done';
-        if (s === 'En attente') return 'status-wait';
-        if (s === 'À Valider (Web)') return 'status-web';
-        return 'status-prod';
-    }
-
-    function loadHistory() {
-        const orders = getOrders().filter(o => o.clientId === user.id || o.client === user.name);
-        const el = document.getElementById('history-content');
-        if (!orders.length) {
-            el.innerHTML = '<p style="text-align:center;color:var(--muted);padding:3rem;">Vous n\'avez pas encore de commandes.<br>Passez votre première commande !</p>';
-            return;
-        }
-        el.innerHTML = orders.map(o => `
-            <div class="order-row">
-                <div class="order-info">
-                    <div class="order-prod">${o.prod} <span style="color:var(--muted);font-weight:400;">×${o.qty}</span></div>
-                    <div class="order-meta">${o.ref} · ${formatDate(o.date)}</div>
-                </div>
-                <div class="order-right">
-                    <span class="status-badge ${statusClass(o.statusProd)}">${o.statusProd}</span>
-                    <span class="order-price">${o.price} DT</span>
-                    <button class="btn-reprint" onclick="openReprintModal(${JSON.stringify(o).replace(/"/g,'&quot;')})">🔄 Réimprimer</button>
-                </div>
-            </div>
-        `).join('');
-    }
-
-    // ── RÉIMPRESSION ──
-    function openReprintModal(order) {
-        _reprintOrder = order;
-        document.getElementById('reprint-details').innerHTML = `
-            <strong>Produit :</strong> ${order.prod}<br>
-            <strong>Quantité initiale :</strong> ${order.qty}<br>
-            <strong>Spécifications :</strong><br><span style="color:var(--muted);font-size:0.82rem;">${(order.desc||'').replace(/\n/g,'<br>')}</span>
-        `;
-        document.getElementById('reprint-qty').value = order.qty;
-        document.getElementById('reprint-modal').classList.add('open');
-    }
-
-    function closeReprintModal() {
-        document.getElementById('reprint-modal').classList.remove('open');
-        _reprintOrder = null;
-    }
-
-    function confirmReprint() {
-        if (!_reprintOrder) return;
-        const newQty = parseInt(document.getElementById('reprint-qty').value) || _reprintOrder.qty;
-        const ref = 'WEB-' + Date.now().toString(36).toUpperCase();
-        const now = new Date();
-        const order = {
-            ..._reprintOrder,
-            ref,
-            qty: newQty,
-            date: now.toLocaleDateString('fr-FR') + ' ' + now.toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'}),
-            statusProd: 'À Valider (Web)',
-            statusCompta: 'Non payé',
-            ts: now.toISOString(),
-            reprintOf: _reprintOrder.ref
-        };
-        saveOrder(order);
-        closeReprintModal();
-        alert('✅ Votre réimpression a été envoyée ! Nous la traitons avec les mêmes spécifications.');
-        loadHistory();
-        loadDashboard();
-    }
-
-    // ── MON COMPTE ──
-    function loadAccount() {
-        const orders = getOrders().filter(o => o.clientId === user.id || o.client === user.name);
-        const count = orders.length;
-        const products = {};
-        orders.forEach(o => { products[o.prod] = (products[o.prod] || 0) + 1; });
-        const topProd = Object.keys(products).sort((a,b) => products[b]-products[a])[0] || '—';
-
-        let level = 'Bronze', lvClass = 'lv-bronze', nextT = 5, progress = 0;
-        if (count >= 20) { level = 'Platinum'; lvClass = 'lv-platinum'; nextT = 20; progress = 100; }
-        else if (count >= 10) { level = 'Gold'; lvClass = 'lv-gold'; nextT = 20; progress = ((count-10)/10)*100; }
-        else if (count >= 5)  { level = 'Silver'; lvClass = 'lv-silver'; nextT = 10; progress = ((count-5)/5)*100; }
-        else { progress = (count/5)*100; }
-
-        const avantages = {
-            'Bronze':   'Atteignez 5 commandes pour débloquer des avantages Silver.',
-            'Silver':   '✅ Priorité sur les délais standard<br>✅ Devis prioritaires',
-            'Gold':     '✅ Remise 5% sur commande<br>✅ Livraison express offerte 1×/mois<br>✅ Commercial dédié',
-            'Platinum': '✅ Remise 10% permanente<br>✅ Délai express prioritaire<br>✅ Ligne directe PDG<br>✅ Corrections PAO offertes'
-        };
-
-        document.getElementById('account-content').innerHTML = `
-            <div class="dash-card" style="margin-bottom:1rem;">
-                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
-                    <div>
-                        <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:1.2rem;">${user.name}</div>
-                        <div style="color:var(--muted);font-size:0.8rem;margin-top:2px;">Client Simpact · Portail VIP</div>
-                    </div>
-                    <span class="loyalty-badge ${lvClass}">${level}</span>
-                </div>
-                <div class="dashboard-grid" style="margin-bottom:1rem;">
-                    <div class="dash-card" style="padding:1rem;">
-                        <div class="dash-card-label">Commandes</div>
-                        <div class="dash-card-value">${count}</div>
-                    </div>
-                    <div class="dash-card" style="padding:1rem;">
-                        <div class="dash-card-label">Terminées</div>
-                        <div class="dash-card-value">${orders.filter(o=>o.statusProd==='Terminé').length}</div>
-                    </div>
-                    <div class="dash-card" style="padding:1rem;">
-                        <div class="dash-card-label">Produit favori</div>
-                        <div class="dash-card-value" style="font-size:0.9rem;padding-top:4px;">${topProd.split(' ')[0]||'—'}</div>
-                    </div>
-                </div>
-                <div class="loyalty-label" style="font-size:0.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">Programme fidélité</div>
-                <div class="loyalty-bar"><div class="loyalty-fill" style="width:${progress}%"></div></div>
-                <div style="font-size:0.75rem;color:var(--muted);margin-top:4px;">${level !== 'Platinum' ? `Encore ${nextT - count} commande(s) pour le niveau suivant` : '🎉 Niveau maximum — Merci de votre fidélité !'}</div>
-            </div>
-            <div class="dash-card" style="margin-bottom:1rem;">
-                <div style="font-size:0.72rem;text-transform:uppercase;letter-spacing:1px;color:var(--red);font-weight:600;margin-bottom:0.75rem;">🎁 Vos avantages ${level}</div>
-                <div style="font-size:0.85rem;line-height:1.8;">${avantages[level]}</div>
-            </div>
-            <div class="contact-card">
-                <div class="contact-avatar">Y</div>
-                <div class="contact-info">
-                    <div class="contact-name">Youssef — SIMPACT</div>
-                    <div class="contact-role">Votre responsable commercial</div>
-                    <div class="contact-links">
-                        <a href="mailto:digital@simpact.tn" class="contact-link">✉️ Email</a>
-                        <a href="https://wa.me/21600000000" class="contact-link" target="_blank">💬 WhatsApp</a>
-                    </div>
-                </div>
-            </div>
-        `;
-    }
-
-    // ── TABS ──
-    function switchTab(tabId, btn) {
-        document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        document.getElementById(tabId).classList.add('active');
-        btn.classList.add('active');
-        if (tabId === 'tab-history')   loadHistory();
-        if (tabId === 'tab-account')   loadAccount();
-        if (tabId === 'tab-dashboard') loadDashboard();
-    }
-
-    // ── FORMULAIRE COMMANDE ──
     function showOptions() {
         document.querySelectorAll('.option-group').forEach(el => el.classList.remove('active'));
         const type = document.getElementById('prod-type').value;
@@ -636,11 +232,11 @@
 
     function getPaperName(v) {
         if (!v) return '';
-        if (v === 'offset-80') return 'Offset 80gr';
-        if (v === 'offset-100') return 'Offset 100gr Premium';
+        if (v === 'offset-80') return 'Offset 80gr'; if (v === 'offset-100') return 'Offset 100gr Premium';
         if (v.startsWith('couche-')) { const p = v.split('-'); return `Couché ${p[1]}gr ${p[2]==='mat'?'Mat':'Brillant'}`; }
         return v;
     }
+    function getPaperNameById(id) { const e = document.getElementById(id); return e ? getPaperName(e.value) : ''; }
     function calcSurcharge(t, n) {
         if (!t || !n) return 0;
         if (t === 'offset-100') return n * PRIX_FIXES.offset_100;
@@ -702,6 +298,7 @@
             }
             price = Math.max(price, PRIX_FIXES.min_price);
 
+            // PAO
             const paoOpt = document.getElementById('pao-service').value;
             let paoCost = 0;
             if (paoOpt !== 'none' && PAO_DATA[type]) {
@@ -727,7 +324,11 @@
             document.getElementById('price-sub').textContent = `TVA (19%): ${tva.toFixed(2)} DT — TTC: ${(total+tva).toFixed(2)} DT`;
             document.getElementById('btn-order').disabled = false;
 
-            window._clientOrderData = { prod: prodName, qty, config, price: total.toFixed(2), tva: tva.toFixed(2), priceTTC: (total+tva).toFixed(2), paoOpt: paoOpt !== 'none' ? paoOpt : null };
+            window._clientOrderData = {
+                prod: prodName, qty, config,
+                price: total.toFixed(2), tva: tva.toFixed(2), priceTTC: (total+tva).toFixed(2),
+                paoOpt: paoOpt !== 'none' ? paoOpt : null
+            };
         } catch(e) { console.error(e); alert('Erreur de calcul.'); }
     }
 
@@ -750,14 +351,114 @@
         document.getElementById('btn-order').textContent = '✅ Commande envoyée';
         setTimeout(() => {
             document.getElementById('success-banner').style.display = 'none';
-            document.getElementById('btn-order').textContent = 'Envoyer ma commande →';
+            document.getElementById('btn-order').textContent = '✅ Envoyer ma commande';
         }, 5000);
         loadHistory();
-        loadDashboard();
+    }
+
+    // HISTORIQUE
+    function formatDate(dateStr) {
+        if (!dateStr) return '—';
+        // Si c'est déjà au format fr (ex: "19/02/2026 17:19"), on le garde
+        if (/^\d{2}\/\d{2}\/\d{4}/.test(dateStr)) return dateStr;
+        // Sinon on reforte depuis un objet Date (cas des anciennes commandes en anglais)
+        try {
+            const d = new Date(dateStr);
+            if (isNaN(d)) return dateStr;
+            return d.toLocaleDateString('fr-FR') + ' ' + d.toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'});
+        } catch(e) { return dateStr; }
+    }
+
+    function loadHistory() {
+        const orders = getOrders().filter(o => o.clientId === user.id || o.client === user.name);
+        const el = document.getElementById('history-content');
+        if (!orders.length) { el.innerHTML = '<p style="text-align:center;color:var(--muted);padding:2rem;">Vous n\'avez pas encore de commandes. Passez votre première commande !</p>'; return; }
+
+        const statusClass = (s) => s === 'Terminé' ? 'status-done' : s === 'En attente' ? 'status-wait' : 'status-prod';
+
+        el.innerHTML = orders.map(o => `
+            <div class="order-row">
+                <div class="order-info">
+                    <div class="order-prod">${o.prod} <span style="color:var(--muted);font-weight:400;">×${o.qty}</span></div>
+                    <div class="order-meta">${o.ref} · ${formatDate(o.date)}</div>
+                </div>
+                <div class="order-status">
+                    <span class="status-badge ${statusClass(o.statusProd)}">${o.statusProd}</span>
+                    <span class="order-price">${o.price} DT HT</span>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    // MON COMPTE
+    function loadAccount() {
+        const orders = getOrders().filter(o => o.clientId === user.id || o.client === user.name);
+        const totalCA = orders.reduce((s, o) => s + parseFloat(o.price || 0), 0);
+        const count = orders.length;
+        const products = {};
+        orders.forEach(o => { products[o.prod] = (products[o.prod] || 0) + 1; });
+        const topProd = Object.keys(products).sort((a,b) => products[b]-products[a])[0] || '—';
+
+        // Niveau fidélité
+        let level = 'Bronze', levelClass = 'loyalty-bronze', nextThreshold = 5, progress = 0;
+        if (count >= 20) { level = 'Platinum'; levelClass = 'loyalty-platinum'; nextThreshold = 20; progress = 100; }
+        else if (count >= 10) { level = 'Gold'; levelClass = 'loyalty-gold'; nextThreshold = 20; progress = ((count-10)/(20-10))*100; }
+        else if (count >= 5) { level = 'Silver'; levelClass = 'loyalty-silver'; nextThreshold = 10; progress = ((count-5)/(10-5))*100; }
+        else { progress = (count/5)*100; }
+
+        const el = document.getElementById('account-content');
+        el.innerHTML = `
+            <div style="margin-bottom:1.5rem;">
+                <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:1.3rem;margin-bottom:4px;">${user.name}</div>
+                <div style="color:var(--muted);font-size:0.85rem;">Client Simpact · Membre depuis 2026</div>
+            </div>
+
+            <div class="stats-row">
+                <div class="stat-box">
+                    <div class="stat-value">${count}</div>
+                    <div class="stat-label">Commandes</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value">${totalCA.toFixed(0)}<span style="font-size:0.9rem"> DT</span></div>
+                    <div class="stat-label">Total dépensé</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value" style="font-size:1rem;padding-top:4px;">${topProd !== '—' ? topProd.split(' ')[0] : '—'}</div>
+                    <div class="stat-label">Produit favori</div>
+                </div>
+            </div>
+
+            <div class="loyalty-bar-wrap">
+                <div class="loyalty-header">
+                    <span class="loyalty-label">⭐ Programme fidélité</span>
+                    <span class="loyalty-badge ${levelClass}">${level}</span>
+                </div>
+                <div class="loyalty-bar"><div class="loyalty-fill" style="width:${progress}%"></div></div>
+                <div class="loyalty-tip">${level !== 'Platinum' ? `Encore ${nextThreshold - count} commandes pour atteindre le niveau suivant` : '🎉 Vous êtes au niveau maximum — Merci de votre fidélité !'}</div>
+            </div>
+
+            <div style="background:var(--purple-pale);border:1px solid #ddd6fe;border-radius:10px;padding:1.25rem;">
+                <div style="font-weight:600;font-size:0.9rem;color:var(--purple);margin-bottom:0.75rem;">🎁 Vos avantages ${level}</div>
+                ${level === 'Bronze' ? '<p style="font-size:0.85rem;color:var(--muted);">Atteignez 5 commandes pour débloquer des avantages Silver.</p>' : ''}
+                ${level === 'Silver' ? '<p style="font-size:0.85rem;">✅ Priorité sur les délais standard<br>✅ Devis prioritaires</p>' : ''}
+                ${level === 'Gold' ? '<p style="font-size:0.85rem;">✅ Remise 5% sur la prochaine commande<br>✅ Livraison express offerte une fois/mois<br>✅ Commercial dédié</p>' : ''}
+                ${level === 'Platinum' ? '<p style="font-size:0.85rem;">✅ Remise 10% permanente<br>✅ Délai express prioritaire<br>✅ Ligne directe PDG<br>✅ Corrections PAO offertes</p>' : ''}
+            </div>
+        `;
+    }
+
+    // TABS
+    function switchTab(tabId, btn) {
+        document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(tabId).classList.add('active');
+        btn.classList.add('active');
+        if (tabId === 'tab-history') loadHistory();
+        if (tabId === 'tab-account') loadAccount();
     }
 
     // Init
-    loadDashboard();
+    loadHistory();
 </script>
 </body>
 </html>
